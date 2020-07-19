@@ -1,0 +1,11 @@
+.view {
+	.date-nav-wrapper {
+		.date-prev, .date-next {
+			background: none;
+		}
+		.date-prev {
+			left: 0;
+			right: auto;
+		}
+	}
+}

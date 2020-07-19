@@ -1,0 +1,592 @@
+<?php
+
+define('SATELLITE_CONFIG_VAR', 'satellite_config');
+
+include_once 'satellite_settings.esn_cas_regex.php';
+
+function _satellite_settings_site_url() {
+  $site_url = &drupal_static(__FUNCTION__);
+  if (!$site_url) {
+    $site_url = url('/', array('absolute' => TRUE));
+  }
+  return $site_url;
+}
+
+function _satellite_settings_validate_mobileapi_url($scope, $code) {
+  $site_url = _satellite_settings_site_url();
+  $entity   = $scope == 'national'
+    ? esn_country_load_by_code($code)
+    : esn_section_load_by_code($code);
+  $url      = $entity->website->value();
+
+  // We cannot compare the urls as strings because we are not interested in some
+  // parts like schema, query, fragment etc.
+  $site_url = strtolower($site_url);
+  if (Strings::endsWith($site_url, '/')) {
+    $site_url = substr($site_url, 0, strlen($site_url) - 1);
+  }
+  $site_url_parsed = parse_url($site_url);
+
+  $url = strtolower($url);
+  if (Strings::endsWith($url, '/')) {
+    $url = substr($url, 0, strlen($url) - 1);
+  }
+  $url_parsed = parse_url($url);
+  $valid      = TRUE;
+
+  if ($site_url_parsed === FALSE || $url_parsed === FALSE) {
+    // We could not parse at least one of the urls.
+    $valid = FALSE;
+  }
+  if ($valid && $site_url_parsed['host'] != $url_parsed['host']) {
+    $valid = FALSE;
+  }
+  if ($valid && isset($site_url_parsed['path'])) {
+    if (!isset($url_parsed['path'])
+      || $site_url_parsed['path'] != $url_parsed['path']
+    ) {
+      $valid = FALSE;
+    }
+  }
+
+  if (!$valid) {
+    $t          = get_t();
+    $galaxy_url = 'https://galaxy.esn.org/section/';
+    if ($scope == 'local') {
+      $galaxy_url .= $entity->country_code->value() . '/';
+    }
+    $galaxy_url .= $code . '/edit';
+    $msg = "<p>The url of this Satellite installation must be configured in Galaxy for the !scope you want to enable the Mobile API for. Please check that you have configured the correct url on Galaxy:<br />";
+    $msg .= "You can edit the url for the !scope <strong>!name</strong> in Galaxy at <a href='!galaxy_url' target='_blank'>!galaxy_url</a>.<br />";
+    $msg .= "After changing the url in Galaxy please <a href='!integrate_url' targe='_blank'>update the country and section data </a> from there.</p><ul>";
+    $msg .= "<li><strong>Current url of this site:</strong> <code>!site_url</code></li>";
+    $msg .= "<li><strong>Configured url in Galaxy:</strong> <code>!conf_url</code></li>";
+    $msg .= "</ul>";
+    $msg = $t($msg, array(
+      '!scope'         => $scope == 'national' ? $t('country') : $t('section'),
+      '!site_url'      => $site_url,
+      '!conf_url'      => $url,
+      '!name'          => $entity->label(),
+      '!galaxy_url'    => $galaxy_url,
+      '!integrate_url' => url('admin/config/regional/galaxy_api'),
+    ));
+    form_set_error('esn_mobile_api_enable', $msg);
+  }
+
+  return $valid;
+}
+
+/**
+ * Implements hook_permission()
+ */
+function satellite_settings_permission() {
+  return array(
+    'administer satellite settings' => array(
+      'title'       => t('Administer ESN Satellite settings'),
+      'description' => t('Change ESN Satellite settings.'),
+    ),
+  );
+}
+
+/*
+ * Implements hook_menu()
+ */
+function satellite_settings_menu() {
+  $items = array();
+
+  $items['admin/settings/satellite'] = array(
+    'title'            => 'ESN Satellite',
+    'access arguments' => array('administer satellite settings'),
+    'access callback'  => 'satellite_settings_menu_access_callback',
+    'type'             => MENU_NORMAL_ITEM,
+  );
+
+  $items['admin/settings/satellite/galaxy'] = array(
+    'title'            => 'Galaxy integration',
+    'description'      => 'Configure your country, section, and permissions',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('satellite_settings_admin'),
+    'access arguments' => array('administer satellite settings'),
+    'type'             => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/*
+ * Implements hook_menu_access_callback()
+ */
+function satellite_settings_menu_access_callback() {
+  // return true if the user has at least one of the permissions
+  return (array_sum(array_map('user_access', func_get_args())) > 0);
+}
+
+
+/**
+ * Implements hook_block_info()
+ */
+function satellite_settings_block_info() {
+  // The address block
+  $blocks['address'] = array(
+    'info' => t('Address from Galaxy'),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ */
+function satellite_settings_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'address':
+      $satellite_settings = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+      $block['subject']   = t('Address');
+      $block['content']   = nl2br(check_plain(variable_get('satellite_settings_address', $satellite_settings['sectionAddress'])));
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_block_configure()
+ */
+function satellite_settings_block_configure($delta = '') {
+  $form = array();
+  if ($delta == 'address') {
+    $satellite_settings                 = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+    $form['satellite_settings_address'] = array(
+      '#type'          => 'textarea',
+      '#title'         => t('Section Address'),
+      '#description'   => t('This is the address displayed on the bottom of the Satellite. Consider updating in on Galaxy!'),
+      '#default_value' => variable_get('satellite_settings_address', $satellite_settings['sectionAddress']),
+    );
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_save()
+ */
+function satellite_settings_block_save($delta = '', $edit = array()) {
+  if ($delta == 'address') {
+    if (!$edit['satellite_settings_address']) {
+      variable_del('satellite_settings_address');
+    }
+    else {
+      variable_set('satellite_settings_address', $edit['satellite_settings_address']);
+    }
+  }
+}
+
+
+/**
+ * Satellite Settings form
+ */
+function satellite_settings_configuration_form() {
+
+  $t = get_t();
+
+  $satellite_settings = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+
+  // Use the list of Sections and ESN countries
+  module_load_include('inc', 'esn_galaxy_api', 'esn_galaxy_api.functions');
+
+  $form['section_selection'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => $t('Section Selection'),
+    '#collapsible' => FALSE,
+    '#collapsed'   => FALSE,
+    '#class'       => array('form-wrapper'),
+  );
+
+  $form['section_selection']['satellite_settings_scope'] = array(
+    '#type'          => 'select',
+    '#title'         => $t('Scope of the Satellite'),
+    '#required'      => FALSE,
+    '#empty_value'   => '',
+    '#options'       => array(
+      'national' => $t('National'),
+      'local'    => $t('Local Section'),
+    ),
+    '#default_value' => $satellite_settings['scope'],
+    '#description'   => $t('Please choose here what you want to use the Satellite for.'),
+  );
+
+  $form['section_selection']['satellite_settings_countrycode'] = array(
+    '#type'          => 'select',
+    '#title'         => $t('Your country'),
+    '#empty_value'   => '',
+    '#options'       => esn_galaxy_api_countries(),
+    '#default_value' => $satellite_settings['countryCode'],
+    '#states'        => array(
+      'visible'  => array(
+        ':input[name="satellite_settings_scope"]' => array('value' => 'national'),
+      ),
+      'required' => array(
+        ':input[name="satellite_settings_scope"]' => array('value' => 'national'),
+      ),
+    ),
+  );
+
+  $form['section_selection']['satellite_settings_sectioncode'] = array(
+    '#type'          => 'select',
+    '#title'         => $t('Your section'),
+    '#options'       => esn_galaxy_api_sections(),
+    '#default_value' => $satellite_settings['sectionCode'],
+    '#prefix'        => '<div id="section-selection-div">',
+    '#suffix'        => '</div>',
+    '#empty_value'   => '',
+    '#states'        => array(
+      'visible'  => array(
+        ':input[name="satellite_settings_scope"]' => array('value' => 'local'),
+      ),
+      'required' => array(
+        ':input[name="satellite_settings_scope"]' => array('value' => 'local'),
+      ),
+    ),
+  );
+
+  $form['section_selection']['esn_mobile_api_enable'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Enable the ESN Mobile API, required in order to use the ESN App.'),
+    '#default_value' => variable_get('esn_mobile_api_is_source', FALSE),
+    '#states'        => array(
+      'visible' => array(
+        ':input[name="satellite_settings_scope"]' => array('value' => 'local'),
+      ),
+    ),
+  );
+
+
+  $form['cas_permissions'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => $t('Satellite Permissions'),
+    '#collapsible' => FALSE,
+    '#collapsed'   => FALSE,
+    '#prefix'      => '<div id="cas-permissions-div">',
+    '#suffix'      => '</div>',
+    '#class'       => array('form-wrapper'),
+  );
+
+  // We need to make sure that CAS could be enabled.
+  // phpCAS depends on curl which may not be available on cheap webhosts.
+  $pass = FALSE;
+  if (function_exists('curl_version')) {
+    $curl_version = curl_version();
+    if ((version_compare($curl_version['version'], '7.5.0') >= 0) && ($curl_version['features'] & CURL_VERSION_SSL)) {
+      $pass = TRUE;
+    }
+  }
+  if ($pass) {
+    $form['cas_permissions']['localwebmaster_admin']    = array(
+      '#type'          => 'checkbox',
+      '#title'         => $t('Give the Local Webmaster administrator access.'),
+      '#default_value' => $satellite_settings['permissions']['localWebmasterAdmin'],
+      '#states'        => array(
+        'visible' => array(
+          ':input[name="satellite_settings_scope"]' => array('value' => 'local'),
+        ),
+
+      ),
+    );
+    $form['cas_permissions']['nationalwebmaster_admin'] = array(
+      '#type'          => 'checkbox',
+      '#title'         => $t('Give the National Webmaster administrator access.'),
+      '#default_value' => $satellite_settings['permissions']['nationalWebmasterAdmin'],
+      '#states'        => array(
+        'visible' => array(
+          ':input[name="satellite_settings_scope"]' => array('!value' => ''),
+        ),
+      ),
+    );
+    $form['cas_permissions']['international_admin']     = array(
+      '#type'          => 'checkbox',
+      '#title'         => $t('Give the International WPA and selected IT Committee members access to help you.'),
+      '#default_value' => $satellite_settings['permissions']['internationalAdmin'],
+    );
+    $form['cas_permissions']['localboard_editor']       = array(
+      '#type'          => 'checkbox',
+      '#title'         => $t('Give the Local Board editor access.'),
+      '#default_value' => $satellite_settings['permissions']['localBoardEditor'],
+      '#states'        => array(
+        'visible' => array(
+          ':input[name="satellite_settings_scope"]' => array('value' => 'local'),
+        ),
+      ),
+    );
+    $form['cas_permissions']['nationalboard_editor']    = array(
+      '#type'          => 'checkbox',
+      '#title'         => $t('Give the National Board editor access.'),
+      '#default_value' => $satellite_settings['permissions']['nationalBoardEditor'],
+      '#states'        => array(
+        'visible' => array(
+          ':input[name="satellite_settings_scope"]' => array('!value' => ''),
+        ),
+      ),
+    );
+  }
+  else {
+    $form['cas_permissions']['no_cas'] = array(
+      '#markup' => t('The php extension "curl" is not available or too old, without it the Galaxy login does not work.'),
+    );
+
+    $form['cas_permissions']['localwebmaster_admin']    = array(
+      '#type'  => 'hidden',
+      '#value' => 0,
+    );
+    $form['cas_permissions']['nationalwebmaster_admin'] = array(
+      '#type'  => 'hidden',
+      '#value' => 0,
+    );
+    $form['cas_permissions']['international_admin']     = array(
+      '#type'  => 'hidden',
+      '#value' => 0,
+    );
+    $form['cas_permissions']['localboard_editor']       = array(
+      '#type'  => 'hidden',
+      '#value' => 0,
+    );
+    $form['cas_permissions']['nationalboard_editor']    = array(
+      '#type'  => 'hidden',
+      '#value' => 0,
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Satellite Settings form validation
+ */
+function satellite_settings_configuration_form_validate(&$form_state) {
+  $t                 = get_t();
+  $scope             = $form_state['values']['satellite_settings_scope'];
+  $enable_mobile_api = $form_state['values']['esn_mobile_api_enable'];
+  $valid             = TRUE;
+  switch ($scope) {
+    case 'national':
+      $code = $form_state['values']['satellite_settings_countrycode'];
+      if (empty($code)) {
+        $valid = FALSE;
+        form_set_error('section', $t('You have to choose a country!'));
+        $enable_mobile_api = $enable_mobile_api ? -1 : $enable_mobile_api;
+      }
+      elseif ($enable_mobile_api) {
+        $valid = _satellite_settings_validate_mobileapi_url($scope, $code);
+      }
+      break;
+    case 'local':
+      $code = $form_state['values']['satellite_settings_sectioncode'];
+      if (empty($code)) {
+        $valid = FALSE;
+        form_set_error('section', $t('You have to choose a section!'));
+        $enable_mobile_api = $enable_mobile_api ? -1 : $enable_mobile_api;
+      }
+      elseif ($enable_mobile_api) {
+        $valid = _satellite_settings_validate_mobileapi_url($scope, $code);
+      }
+      break;
+  }
+  if ($enable_mobile_api == -1) {
+    form_set_error('esn_mobile_api_enable', $t('ESN Mobile API cannot be enabled
+    if no !scope is set.',
+        array('!scope' => $scope == 'national' ? $t('country') : $t('section')))
+    );
+  }
+  return $valid;
+}
+
+
+/**
+ * Callback for the administration form
+ */
+function satellite_settings_admin($form, &$form_state) {
+
+  $form              = satellite_settings_configuration_form();
+  $form['submit']    = array(
+    '#type'  => 'submit',
+    '#value' => t('Save Configuration'),
+    '#class' => array('form-submit')
+  );
+  $form['#submit'][] = 'satellite_settings_admin_submit';
+
+  return $form;
+}
+
+/**
+ * administration form validation
+ */
+function satellite_settings_admin_validate($form, &$form_state) {
+  return satellite_settings_configuration_form_validate($form_state);
+}
+
+/**
+ * administration form submission
+ */
+function satellite_settings_admin_submit($form, &$form_state) {
+  $satellite_settings = satellite_settings_parse_admin_form($form_state);
+  satellite_settings_configure_mobile_api($form_state);
+  satellite_settings_configure_cas($satellite_settings);
+  satellite_settings_save_settings($satellite_settings);
+  drupal_set_message('The Settings have been saved');
+}
+
+/**
+ * administration form treatment
+ */
+function satellite_settings_save_settings($satellite_settings, $is_install = FALSE) {
+
+  $sectioncode = $satellite_settings['sectionCode'];
+  $countrycode = $satellite_settings['countryCode'];
+
+  switch ($satellite_settings['scope']) {
+    case 'local':
+      $section                              = esn_section_load_by_code($sectioncode);
+      $satellite_settings['sectionName']    = $section->name->value();
+      $satellite_settings['sectionAddress'] = $section->postaladdress->value();
+      // set country code too
+      $country                           = $section->country;
+      $satellite_settings['countryCode'] = $countrycode;
+      $satellite_settings['countryName'] = $country->name->value();
+      break;
+    case 'national':
+      $country                           = esn_country_load_by_code($countrycode);
+      $satellite_settings['countryCode'] = $countrycode;
+      $satellite_settings['countryName'] = $country->name->value();
+      break;
+  }
+
+  // send changes to ISS if it's not an installation
+  if ($is_install == FALSE) {
+    satellite_callhome_call();
+  }
+
+  variable_set(SATELLITE_CONFIG_VAR, $satellite_settings);
+}
+
+
+/**
+ * Set cas_roles_relations with the appropriate regular expressions
+ */
+function satellite_settings_configure_cas($satellite_settings) {
+  $cas_config = new ESN_CAS_Regex();
+
+  $cas_roles = variable_get('cas_roles_relations', array());
+
+  $cas_roles['administrator'] = $cas_config->mkAdministratorRegex($satellite_settings);
+  $cas_roles['editor']        = $cas_config->mkEditorRegex($satellite_settings);
+  $cas_roles['member']        = $cas_config->mkMemberRegex($satellite_settings);
+
+  variable_set('cas_roles_relations', $cas_roles);
+}
+
+function satellite_settings_parse_admin_form($form_state) {
+  $satellite_settings = satellite_settings_default_settings();
+
+  $scope                       = $form_state['values']['satellite_settings_scope'];
+  $satellite_settings['scope'] = $scope;
+  if ($scope == 'local') {
+    $satellite_settings['sectionCode'] = $form_state['values']['satellite_settings_sectioncode'];
+    $satellite_settings['countryCode'] = substr($form_state['values']['satellite_settings_sectioncode'], 0, 2);
+  }
+  if ($scope == 'national') {
+    $satellite_settings['countryCode'] = $form_state['values']['satellite_settings_countrycode'];
+  }
+
+
+  $satellite_settings['permissions'] = array(
+    'localWebmasterAdmin'    => ($scope == 'local' ? $form_state['values']['localwebmaster_admin'] : 0),
+    'nationalWebmasterAdmin' => ($scope != '' ? $form_state['values']['nationalwebmaster_admin'] : 0),
+    'internationalAdmin'     => $form_state['values']['international_admin'],
+    'localBoardEditor'       => ($scope == 'local' ? $form_state['values']['localboard_editor'] : 0),
+    'nationalBoardEditor'    => ($scope != '' ? $form_state['values']['nationalboard_editor'] : 0),
+  );
+
+  return $satellite_settings;
+}
+
+/**
+ * Enable or disable the Mobile API module
+ */
+function satellite_settings_configure_mobile_api($form_state) {
+  variable_set('esn_mobile_api_is_source', $form_state['values']['esn_mobile_api_enable']);
+}
+
+function satellite_settings_default_settings() {
+  $satellite_settings = array(
+    'scope'                    => '',
+    'countryCode'              => '',
+    'countryName'              => '',
+    'sectionCode'              => '',
+    'sectionName'              => '',
+    'sectionAddress'           => '',
+    'esn_mobile_api_is_source' => FALSE,
+    'permissions'              => array(
+      'localWebmasterAdmin'    => TRUE,
+      'nationalWebmasterAdmin' => TRUE,
+      'internationalAdmin'     => TRUE,
+      'localBoardEditor'       => FALSE,
+      'nationalBoardEditor'    => FALSE,
+    ),
+  );
+  return $satellite_settings;
+}
+
+
+/**
+ * return the scope of the Satellite (local, national, international)
+ */
+function satellite_settings_get_scope() {
+  $satellite_settings = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+  return $satellite_settings['scope'];
+}
+
+/**
+ * return the section code or country code
+ */
+function satellite_settings_get_code() {
+  $satellite_settings = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+  switch ($satellite_settings['scope']) {
+    case 'local':
+      return $satellite_settings['sectionCode'];
+    case 'national':
+      return $satellite_settings['countryCode'];
+    default:
+      return '';
+  }
+}
+
+/**
+ * return the section name or country mane
+ */
+function satellite_settings_get_name() {
+  $satellite_settings = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+  switch ($satellite_settings['scope']) {
+    case 'local':
+      return $satellite_settings['sectionName'];
+    case 'national':
+      return $satellite_settings['countryName'];
+    default:
+      return '';
+  }
+}
+
+/**
+ * return the section address (country address is not implemented yet
+ */
+function satellite_settings_get_address() {
+  $satellite_settings = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+  return ($satellite_settings['sectionAddress'] ? $satellite_settings['sectionAddress'] : '');
+}
+
+/**
+ * return the country name even if its a section
+ */
+function satellite_settings_get_countryname() {
+  $satellite_settings = variable_get(SATELLITE_CONFIG_VAR, satellite_settings_default_settings());
+  return ($satellite_settings['countryName'] ? $satellite_settings['countryName'] : '');
+}
+
+

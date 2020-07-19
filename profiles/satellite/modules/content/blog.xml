@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blog>
+	<item>
+		<title>Hello ESN!</title>
+		<summary><![CDATA[<p>This is the new ESN Satellite Blog.</p><!]]></summary>
+		<body><![CDATA[<p>The IT Committee introduces a new feature to Satellite 4.4: the <strong>Satellite Blog</strong></p>
+		<p>With the new blog feature you can add blog posts including an image, categories and comment support.
+			Categories can be configured at <a href="admin/structure/taxonomy/blog_category" target="_blank">admin/structure/taxonomy/blog_category</a>,
+			Comments can be configured at <a href="admin/structure/types/manage/blog" target="_blank">admin/structure/types/manage/blog</a>
+			and managed at <a href="admin/content/comment" target="_blank">admin/content/comment</a>.
+		</p><!]]></body>
+		<image>profiles/satellite/modules/content/files/itcom.png</image>
+	</item>
+	<item>
+		<title>ESN Gift Exchange</title>
+		<summary><![CDATA[<p>The weather starts to get colder, nights are getting darker, snow starts to cover the landscape, these
+			are the signs to know something special in ESN is getting closer, a time to share something special with your
+			fellow ESNers, how?<br /><u><strong>Obviusly with the ESN Gift Exchange!</strong></u></p><!]]></summary>
+		<body><![CDATA[<p style="text-align:justify">The weather starts to get colder, nights are getting darker, snow starts to
+			cover the landscape, these are the signs to know something special in ESN is getting closer, a time to share
+			something special with your fellow ESNers, how?<br><u><strong>Obviusly with the ESN Gift Exchange!</strong></u>
+			</p>
+			<p style="text-align:justify">Yes, Gift Exchnage is already here, conNECting the ESN Network, from South to North,
+				from East to West, so it's members can exchange smiles, knowledge and whatever you feel like giving to make the
+				day to a fellow ESNer. How you can take part in this wonderful experience? Very simple, first of all you need to
+				be ESNer, convince your local Board, your National Board or your NR to sign up to the Gift Exchange and after
+				that you will receive more instructions, if you want to know more, have a peak in the FAQ page of the level you
+				want to take part in (Local or National).</p>
+			<p style="text-align:justify">Don't wait, sign up now! The registration will be open until the <strong>30th of
+				November!</strong> So don't start your hibernation yet.</p>
+			<p style="text-align:justify">If you have any questions, don't hesitate to contact the dedicated office for ESN in
+				the Santa Village (The Gift Exchange Team) <a href="mailto:giftexchange@esn.org">giftexchange@esn.org</a>.</p>
+		<!]]></body>
+		<image>profiles/satellite/modules/content/files/esn_gift_exchange.png</image>
+	</item>
+</blog>

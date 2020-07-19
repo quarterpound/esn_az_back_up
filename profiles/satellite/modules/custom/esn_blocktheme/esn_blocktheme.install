@@ -1,0 +1,21 @@
+<?php
+// $Id: satellite_bt.install,v 1.2.2.1 2010/12/08 08:08:19 amateescu Exp $
+
+/**
+ * @file
+ *   Install file for satellite_bt module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function esn_blocktheme_install() {
+  // Here we would like to take all existing blocks and randomize their colours :P
+}
+ 
+/**
+ * Implements hook_uninstall().
+ */
+function esn_blocktheme_uninstall() {
+  variable_del('esn_blocktheme');
+}

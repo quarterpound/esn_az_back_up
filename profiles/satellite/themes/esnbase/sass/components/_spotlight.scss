@@ -1,0 +1,262 @@
+/* --------------------------------------------------------------
+EXAMPLE.css
+Lorem ipsum dolor
+-------------------------------------------------------------- */
+
+
+
+
+
+/* 
+-------------------------------------------------------------- */
+	
+#spotlight {
+
+	background: #f5f5f5 url('../img/title_bg.png') top right no-repeat;
+	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.04);
+	
+	
+	.flexslider {
+
+		border: none;
+		background: $esn-blue;
+		margin: 0;
+		border-radius: 0;
+
+		@include breakpoint(tablet-landscape) {
+			border-radius: $radius;
+		}
+	}
+
+	.flex-nav-container {
+		margin-bottom: 0;
+		position: relative;
+	}
+
+	#block-views-spotlight-block {
+
+		position: relative;
+		padding: 0;
+
+
+		.block-content {
+			overflow: hidden;
+		}
+
+		.block-header {
+			display: none;
+		}
+
+		.field, .field-items, .field-item {
+			margin: 0;
+		}
+
+		.group-image {
+
+		}
+
+		.group-content {
+			
+			color: rgba(0,0,0,0.3);
+			padding: 15px 20px;
+			box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			font-family: $font-spotlight-content;
+			font-size: 12px;
+			line-height: normal;
+
+			a {
+				color: #fff;
+				text-decoration: none;
+			}
+
+			h2 {
+				margin: 5px 0 10px 0;
+				font-family: $font-spotlight-header;
+				font-size: 24px;
+				line-height: 24px;
+				text-transform: uppercase;
+			}
+		}
+
+		.flex-direction-nav {
+
+			display: none;
+
+			li {
+
+			}
+
+			a {
+
+			}
+
+			a.prev {
+
+			}
+
+			a.next {
+
+			}
+		}
+
+		.flex-control-nav {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			width: auto;
+
+			li {
+
+				margin: 0 0 0 10px;
+
+				a {
+					background: rgba(255,255,255,0.5);
+					border-radius: 100px;
+					box-shadow: 0 1px 0px rgba(0,0,0,0.1), inset 0 -1px 0px rgba(255,255,255,0.2);
+
+					&.flex-active,
+					&:hover {
+						background: #FFFFFF;
+						background: rgba(255,255,255,1);
+						cursor: default;
+					}
+				}
+			}
+		}
+
+		// Colors
+
+		&.esn-blockcolor-blue .flexslider   { background-color: $esn-blue; }
+		&.esn-blockcolor-purple .flexslider { background-color: $esn-pink; }
+		&.esn-blockcolor-green .flexslider  { background-color: $esn-green; }
+		&.esn-blockcolor-orange .flexslider { background-color: $esn-orange; }
+		&.esn-blockcolor-dark-blue .flexslider { background-color: $esn-dark-blue; }
+
+
+		@include breakpoint(mobile-landscape) {
+
+			.group-image {
+				width: 50%;
+				position: relative;
+        		float: left;
+				&:after {
+					$triangle: 12px;
+					z-index: 500;
+					position: absolute;
+					right: 0;
+					bottom: 15px;
+					content: "";
+					width: 0px;
+					height: 0px;
+					border-style: solid;
+					border-width: 0 0 $triangle $triangle;
+					border-color: transparent transparent $esn-blue transparent;
+				}
+			}
+
+			.group-content {
+				position: relative;
+		        float: right;
+				// we can not set the element to absolute because it breaks on IE
+				// position: absolute;
+				// bottom: 0;
+				// right: 0;
+				padding: 12px;
+				width: 50%;
+
+				h2 {
+					font-size: 18px;
+					line-height: 18px;
+				}
+			}
+
+			&.esn-blockcolor-blue .group-image:after   { border-bottom-color: $esn-blue; }
+			&.esn-blockcolor-purple .group-image:after { border-bottom-color: $esn-pink; }
+			&.esn-blockcolor-green .group-image:after  { border-bottom-color: $esn-green; }
+			&.esn-blockcolor-orange .group-image:after { border-bottom-color: $esn-orange; }
+			&.esn-blockcolor-dark-blue .group-image:after { border-bottom-color: $esn-dark-blue; }
+		}
+
+		@include breakpoint(tablet-portrait) {
+			
+			
+			.group-image {
+				width: 67.5%;
+				&:after {
+					bottom: 25px;
+					$triangle: 20px;
+					border-width: 0 0 $triangle $triangle;
+				}
+			}
+
+			.group-content {
+				width: 32.5%;
+				padding: 20px;
+			}
+		}
+
+		@include breakpoint(tablet-landscape) {
+			
+			padding: 20px 20px;
+
+			.group-content {
+				font-size: 14px;
+				h2 {
+					font-size: 24px;
+					line-height: 24px;
+				}
+			}
+
+			img {
+				border-radius: $radius 0 0 $radius;
+			}
+		}
+
+		@include breakpoint(desktop) {
+
+			.group-content {
+				font-size: 14px;
+				h2 {
+					font-size: 32px;
+					line-height: 32px;
+				}
+			}
+		}
+
+	}
+
+}
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+

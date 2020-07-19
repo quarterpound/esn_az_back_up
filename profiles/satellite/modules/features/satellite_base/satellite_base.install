@@ -1,0 +1,74 @@
+<?php
+/**
+ * @file
+ * Installation routines for the ESN Content Base feature.
+ */
+
+use ESN\Satellite\Requirements\ComposerPackageInfo;
+use ESN\Satellite\Requirements\ComposerRequirements;
+
+/**
+ * Implements hook_requirements
+ * @param $phase
+ *           The phase in which requirements are checked
+ */
+function satellite_base_requirements($phase){
+  satellite_register_autoloader();
+  $composer = ComposerRequirements::load();
+  /** @var ComposerPackageInfo|null $package */
+  $package = NULL;
+  $requirements = array();
+  // Ensure translations don't break during installation.
+  $t = get_t();
+  $phpversion = phpversion();
+
+  // Test PHP version
+  $requirements['satellite_php'] = [
+    'title' => $t('ESN Satellite (PHP)'),
+    'value' => ($phase == 'runtime') ? l($phpversion, 'admin/reports/status/php') : $phpversion,
+  ];
+  if (version_compare($phpversion, '7.0') < 0) {
+    $requirements['satellite_php']['description'] = format_string('<p style="text-indent: 0;margin-left: 35px;">After <strong>July 31<sup>st</sup> 2019 Satellite 4 requires PHP 7.1.</strong> You are currently using PHP !php. Please upgrade your server or web hosting soon!<br />The <em><a href="https://it.esn.org/" target="_blank">IT committee of ESN International</a></em></p>', ['!php' => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION]);
+    $requirements['satellite_php']['severity'] = REQUIREMENT_WARNING;
+  } elseif (version_compare($phpversion, '7.2') >0) {
+    $requirements['satellite_php']['description'] = format_string('<p style="text-indent: 0;margin-left: 35px;"><strong>Satellite 4.6 is not tested for PHP 7.2 or newer.</strong></p>', ['!php' => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION]);
+    $requirements['satellite_php']['severity'] = REQUIREMENT_WARNING;
+  }
+
+
+  if (version_compare($phpversion, SATELLITE_MINIMUM_PHP) < 0) {
+    $requirements['esn_galaxy_php']['description'] = $t('Your PHP installation is too old. Satellite requires at least PHP %version.', array('%version' => SATELLITE_MINIMUM_PHP));
+    $requirements['esn_galaxy_php']['severity'] = REQUIREMENT_ERROR;
+  }
+
+  // JSON Mapper
+  $jsonmapper = [
+    'title' => $t('JSON Mapper'),
+    'value' => '',
+    'severity' => REQUIREMENT_OK,
+  ];
+  if ($package = $composer->getPackage('netresearch/jsonmapper')) {
+    $jsonmapper['value'] = $package->getVersion();
+  }
+  $requirements['jsonmapper'] = $jsonmapper;
+
+  return $requirements + \ESN\Satellite\Notifications\NotificationManager::requirements();
+}
+
+/**
+ *  Revert feature: Enable service links and metatag integration
+ */
+function satellite_base_update_7001() {
+  $modules = array('service_links', 'metatag');
+  module_enable($modules, true);
+  esn_base_features_revert(array(
+    'satellite_base'
+  ));
+}
+
+/**
+ * Enable Imagecache Token and Transliteration
+ */
+function satellite_base_update_7002() {
+  module_enable(array('imagecache_token', 'transliteration'));
+}

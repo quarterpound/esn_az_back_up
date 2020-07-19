@@ -1,0 +1,204 @@
+<?php
+
+
+/**
+ * Implements hook_permission()
+ */
+function satellite_theme_settings_permission() {
+  return array('administer satellite theme settings' => array(
+    'title' => t('Change Satellite theme settings'),
+    'description' => t('Change ESN Satellite settings.'),
+  ));
+}
+
+/*
+ * Implements hook_menu()
+ */
+function satellite_theme_settings_menu() {
+
+  $items['admin/settings/satellite/theme_settings'] = array(
+    'title' => 'Satellite Logo and Theme Settings',
+    'description' => 'Change your logo and base theme settings here.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('satellite_theme_settings_form'),
+    'access arguments' => array('administer satellite theme settings'),
+  );
+
+  return $items;
+}
+
+/*
+ * Implements hook_menu_alter()
+ */
+function satellite_theme_settings_menu_alter(&$items) {
+  // give access to the menu even if the Satellite settings are not set.
+  // this only works because the access callback can handle more than one string as arguments.
+  $items['admin/settings/satellite']['access arguments'][] = 'administer satellite theme settings';
+}
+
+function satellite_theme_settings_form($form, &$form_state){
+
+	$key = 'esnsatellite';
+
+	$form['theme_settings']['esnbase'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('ESN Base settings')
+	);
+
+	$form['theme_settings']['esnbase']['nav-size'] = array(
+		'#type'          => 'select',
+		'#title'         => t('Navigation Size'),
+		'#default_value' => theme_get_setting('nav-size', $key),
+		'#description'   => t("Lorem ipsum dolor init"),
+		'#options' => array(
+			's' => t('Small'),
+			'm' => t('Medium'),
+			'l' => t('Large'),
+		),
+	);
+
+	$form['theme_settings']['esnbase']['fade-effect'] = array(
+		'#type' => 'checkbox',
+		'#title' => t('Fade-in effect'),
+		'#default_value' => theme_get_setting('fade-effect', $key),
+		'#description' => t('Check here if you want the theme to fade in pages when they load.'),
+	);
+
+  $form['theme_settings']['logo'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Logo image settings'),
+    '#description' => t('If toggled on, the following logo will be displayed.'),
+    '#attributes' => array('class' => array('theme-settings-bottom')),
+  );
+  $form['theme_settings']['logo']['default_logo'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use the default logo'),
+    '#default_value' => theme_get_setting('default_logo', $key),
+    '#tree' => FALSE,
+    '#description' => t('Check here if you want the theme to use the logo supplied with it.')
+  );
+  $form['theme_settings']['logo']['settings'] = array(
+    '#type' => 'container',
+    '#states' => array(
+      // Hide the logo settings when using the default logo.
+      'invisible' => array(
+        'input[name="default_logo"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
+  $form['theme_settings']['logo']['settings']['logo_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to custom logo'),
+    '#description' => t('The path to the file you would like to use as your logo file instead of the default logo.'),
+    '#default_value' => theme_get_setting('logo_path', $key),
+  );
+  $form['theme_settings']['logo']['settings']['logo_upload'] = array(
+    '#type' => 'file',
+    '#title' => t('Upload logo image'),
+    '#maxlength' => 40,
+    '#description' => t("If you don't have direct file access to the server, use this field to upload your logo.")
+  );
+
+  $form = _satellite_theme_settings_form_google_analytics($form, $form_state);
+
+  $form['theme_settings']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  $form['#submit'][] = 'satellite_theme_settings_submit';
+  $form['#validate'][] = 'satellite_theme_settings_validate';
+  return $form;
+}
+
+function _satellite_theme_settings_form_google_analytics($form, &$form_state) {
+  $galink = l(t('Google Analytics'), 'http://www.google.com/analytics/', array('target' => '_blank'));
+  $form['theme_settings']['googleanalytics'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Google Analytics'),
+    '#attributes' => array('class' => array('theme-settings-bottom')),
+  );
+  if (module_exists('googleanalytics')) {
+    $form['theme_settings']['googleanalytics']['#description'] =
+      t('!galink is enabled. Here you can go to the !gaconfig.', array('!galink' => $galink, '!gaconfig' => l(t('configuration form'), 'admin/config/system/googleanalytics')));
+  } else {
+    $form['theme_settings']['googleanalytics']['#description'] =
+      t('!galink is either not !enabled or installed.', array('!galink' => $galink, '!enabled' => l(t('enabled'), 'admin/modules')));
+    $form['theme_settings']['googleanalytics']['download'] = array(
+      '#markup' => t('<p>If not installed, you can download the <em>Google Analytics</em> module from <a href="https://www.drupal.org/project/google_analytics" target="_blank">https://www.drupal.org/project/google_analytics</a>.</p>'),
+    );
+  }
+  return $form;
+}
+
+function satellite_theme_settings_validate($form, &$form_state) {
+
+  module_load_include('inc', 'system', 'system.admin');
+
+	  // Handle file uploads.
+  $validators = array('file_validate_is_image' => array());
+
+  // Check for a new uploaded logo.
+  $file = file_save_upload('logo_upload', $validators);
+  if (isset($file)) {
+    // File upload was attempted.
+    if ($file) {
+      // Put the temporary file in form_values so we can save it on submit.
+      $form_state['values']['logo_upload'] = $file;
+    }
+    else {
+      // File upload failed.
+      form_set_error('logo_upload', t('The logo could not be uploaded.'));
+    }
+  }
+
+  // If the user provided a path for a logo or favicon file, make sure a file
+  // exists at that path.
+  if ($form_state['values']['logo_path']) {
+    $path = _system_theme_settings_validate_path($form_state['values']['logo_path']);
+    if (!$path) {
+      form_set_error('logo_path', t('The custom logo path is invalid.'));
+    }
+  }
+
+}
+
+function satellite_theme_settings_submit($form, &$form_state) {
+
+  module_load_include('inc', 'system', 'system.admin');
+
+  // Exclude unnecessary elements before saving.
+  form_state_values_clean($form_state);
+
+  $values = $form_state['values'];
+
+  // If the user uploaded a new logo or favicon, save it to a permanent location
+  // and use it in place of the default theme-provided file.
+  if ($file = $values['logo_upload']) {
+    unset($values['logo_upload']);
+    $filename = file_unmanaged_copy($file->uri);
+    $values['default_logo'] = 0;
+    $values['logo_path'] = $filename;
+    $values['toggle_logo'] = 1;
+  }
+
+  // If the user entered a path relative to the system files directory for
+  // a logo or favicon, store a public:// URI so the theme system can handle it.
+  if (!empty($values['logo_path'])) {
+    $values['logo_path'] = _system_theme_settings_validate_path($values['logo_path']);
+  }
+
+  $theme_settings = variable_get('theme_esnsatellite_settings', array());
+
+  foreach ($values as $name => $val) {
+	$theme_settings[$name] = $val; 
+
+  }
+
+  variable_set('theme_esnsatellite_settings', $theme_settings);
+
+  drupal_set_message(t('The configuration options have been saved.'));
+
+  cache_clear_all();
+
+}
+

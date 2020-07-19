@@ -1,0 +1,18 @@
+# Satellite Development makefile
+
+# You can run this makefile with the following command if you don't want to rebuild the entire satellite:
+# drush make --no-core --contrib-destination=profiles/satellite/ profiles/satellite/satellite.make.yml .
+
+api:  2
+core: 7.x
+
+# Specify common subdir of "contrib"
+defaults:
+  projects:
+    subdir: "contrib"
+
+projects:
+  panels:
+    version: 3.9
+  panelizer:
+    version: 3.4

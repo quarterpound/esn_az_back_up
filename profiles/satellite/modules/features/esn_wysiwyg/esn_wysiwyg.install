@@ -1,0 +1,14 @@
+<?php
+/**
+ * @file
+ * Contains update functions to enable recently added features to ESNblog base feature
+ */
+
+/**
+ * Revert feature
+ */
+function esn_wysiwyg_update_7001() {
+  features_revert(array(
+    'esn_wysiwyg' => array('wysiwyg'),
+  ));
+}

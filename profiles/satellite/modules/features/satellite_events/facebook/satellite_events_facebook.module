@@ -1,0 +1,79 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Events Facebook integration.
+ */
+
+
+
+/**
+ * Implementation of hook_ctools_plugin_api().
+ */
+function satellite_events_facebook_ctools_plugin_api($owner, $api) {
+  if ($owner == 'satellite_events_facebook' && $api == 'plugins') {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Implementation of hook_feeds_plugins().
+ */
+function satellite_events_facebook_feeds_plugins() {
+  $info = array();
+  $info['SatelliteFacebookEventsParser'] = array(
+    'name' => 'ESN Satellite Facebook Events parser',
+    'description' => 'Parse Facebook event feeds to be mapped to Event nodes of Satellite 4.x.',
+    'help' => '',
+    'handler' => array(
+      'parent' => 'FeedsParser',
+      'class' => 'SatelliteFacebookEventsParser',
+      'file' => 'inc/SatelliteFacebookEventsParser.inc',
+      'path' => drupal_get_path('module', 'satellite_events_facebook'),
+    ),
+  );
+  return $info;
+}
+
+function _satellite_events_facebook_pareser_defaults() {
+  static $defaults = array(
+    1 => 'facebook_parser_default_value_1',
+    2 => 'facebook_parser_default_value_2',
+    3 => 'facebook_parser_default_value_3',
+    4 => 'facebook_parser_default_value_4',
+    5 => 'facebook_parser_default_value_5',
+  );
+
+  return $defaults;
+}
+
+function satellite_events_facebook_satellite_events_settings_alter(&$form, &$form_state, &$actions) {
+  $form['events']['facebook'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Facebook integration'),
+    '#description' => t('Configure Facebook integration of Satellite events, e. g. the Facebook feeds parser'),
+  );
+  $facebook = &$form['events']['facebook'];
+
+
+  foreach (_satellite_events_facebook_pareser_defaults() as $index => $name) {
+    $facebook[$name] = array(
+      '#type' => 'textfield',
+      '#title' => t('Events Parser - Default value !index', array('!index' => $index)),
+      '#description' => t('Provides a static default value which can be assigned to a target.'),
+      '#maxlength' => 200,
+      '#size' => 60,
+      '#default_value' => SatelliteFacebookEventsParser::getDefaultFieldValue($index),
+    );
+  }
+
+  $actions['save'] = TRUE;
+}
+
+
+function satellite_events_facebook_satellite_events_settings_save($form, $form_state) {
+  foreach (_satellite_events_facebook_pareser_defaults() as $index => $name) {
+    if (isset($form_state['values'][$name])) {
+      SatelliteFacebookEventsParser::updateDefaultFieldValue($index, $form_state['values'][$name]);
+    }
+  }
+}

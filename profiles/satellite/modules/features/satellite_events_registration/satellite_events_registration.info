@@ -1,0 +1,18 @@
+name = Satellite Events registration
+description = Add webforms to the Event so that events can be used for registrations
+core = 7.x
+package = ESN Satellite
+dependencies[] = ctools
+dependencies[] = esn_esncard_api
+dependencies[] = satellite_events
+dependencies[] = strongarm
+dependencies[] = webform
+dependencies[] = webform_esncard
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[variable][] = webform_node_event
+
+; Information added by drush on 2014-04-02
+version = "7.x-1.x-dev"
+project = "satellite_events_registration"
+datestamp = "1396438902"

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<partners>
+  <item>
+    <title>IT committee</title>
+    <body><![CDATA[
+    <p style="text-align: justify;">The IT Committee works closely with the Web Project Administrator, aims at strengthening ESN by developing IT systems for the whole Network and by providing assistance and advice about technological matters in general.</p>
+    <!]]></body>
+    <logo>profiles/satellite/modules/content/files/itcom.png</logo>
+    <link>
+      <title>Facebook page</title>
+      <url>https://www.facebook.com/ESN.IT.Committee</url>
+    </link>
+    <link>
+      <title>IT Committee page</title>
+      <url>http://it.esn.org</url>
+    </link>
+  </item>
+  <item>
+    <title>The ESNcard</title>
+    <body><![CDATA[
+<p style="text-align: justify;">The <strong>ESNcard</strong> is the membership card of ESN which means that you can access to all the services offered by the ESN and our partners.</p><p style="text-align: justify;">With the ESNcard, you will enjoy thousands of discounts (housing, sport, food, bars, etc.) all over Europe. Moreover, you will have the opportunity to participate in thousands of events (trips, cultural events, sports activities and parties) all year long.</p><p style="text-align: justify;">The aim of the ESNcard is to support and give opportunities to international students during and after their exchange.</p><h3>Who uses the ESNcard?</h3><p style="text-align: justify;">The ESNcard is used by over 120.000 people per year in 38 countries, and the numbers are growing every year.</p><p style="text-align: justify;">You can get the ESNcard, if you belong to one of the following groups:</p><ul><li>You have been an international student (e.g Erasmus or any other exchange programme)</li><li>You are currently an international student on exchange</li><li>You are a volunteer in ESN</li></ul><h3>How can you get the ESNcard?</h3><p style="text-align: justify;">The ESNcard is sold in almost all the countries where ESN is present by the ESN sections which are non-profit student organisations.</p><p style="text-align: justify;">The ESNcard can be obtained exclusively from your local ESN section. You can find the sales point of the ESNcard in “get a card”.</p><!]]></body>
+    <logo>profiles/satellite/modules/content/files/esncard.png</logo>
+    <link>
+      <title>ESNcard.org</title>
+      <url>http://www.esncard.org</url>
+    </link>
+  </item>
+  <item>
+      <title>Eurail.Com</title>
+      <body><![CDATA[
+      <h3>Who are we?</h3>
+<p>Eurail.com&nbsp;is the online store for your European rail passes. Eurail.com is a fast growing e-commerce company which sells&nbsp;<a href="http://esncard.org/discount/eurailcom" target="_blank">Eurail</a>&nbsp;and&nbsp;<a href="http://esncard.org/discount/interraileu" target="_blank">InterRail</a>&nbsp;train passes online, and provides first-class customer service and expert travel advice. Our rail passes let you visit up to 30 European countries by train.</p>
+<h3>Do I need a Eurail or an InterRail pass?</h3>
+<p>Non-European ESN students who want to explore Europe by train can order their passes at <a href="http://esncard.org/discount/eurailcom" target="_blank">www.eurail.com</a>.</p>
+<p>European ESN students and non-European ESN students who have been in Europe for at least 6 months can order their InterRail pass at&nbsp;<a href="http://esncard.org/discount/interraileu" target="_blank">www.interrail.eu</a>.&nbsp;</p>
+<p>We understand this might be a bit confusing. So if you’re not quite sure whether you can travel with a Eurail or InterRail pass, just&nbsp;<a href="http://www.eurail.com/help/choosing-pass/should-i-travel-eurail-or-interrail?utm_source=ESN&amp;utm_medium=SITE&amp;utm_campaign=ESNEM">take our little test.</a></p>
+<h3>ESN &amp; Eurail.com</h3>
+<p>As an ESN student you’re staying at a new place and making friends from all over the world. We can imagine that during or after your study abroad you want to explore more places in Europe than just the country you study in. And what better way for you and your friends to explore Europe than with the freedom of a rail pass. &nbsp;Travel Europe with a Eurail or InterRail pass and get the train journey of a lifetime!</p>
+<h3>Let’s get in touch!</h3>
+<p>Are you already daydreaming about all the places you want to visit? “Like” our award-winning <a href="http://www.facebook.com/eurorail" target="_blank">Facebook</a> page and follow us on <a href="http://www.twitter.com/eurail" target="_blank">Twitter</a> to read our top travel tips and to connect with like-minded travelers from all over, plus find out about our latest offers! Want extra travel inspiration? Check out our boards on <a href="http://www.pinterest.com/eurail" target="_blank">Pinterest</a>!</p>
+<p>Contact our Customer Service Team via Facebook or Twitter, or email us for advice on choosing the right InterRail pass and help planning your trip: <a href="mailto:esn@eurail.com">esn@eurail.com</a>.&nbsp;</p><!]]></body>
+      <logo>profiles/satellite/modules/content/files/Eurail.png</logo>
+      <link>
+        <title>Eurail.Com</title>
+        <url>http://www.eurail.com/</url>
+      </link>
+      <link>
+        <title>Page on ESNcard.org</title>
+        <url>http://esncard.org/eurail</url>
+      </link>
+    </item>
+  </partners>

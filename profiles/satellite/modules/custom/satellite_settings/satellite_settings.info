@@ -1,0 +1,13 @@
+name = ESN Satellite Settings
+description = Configure your Satellite with this module
+core = 7.x
+package = ESN Satellite
+dependencies[] = esn_api_tools
+dependencies[] = esn_galaxy_api
+
+files[] = satellite_settings.esn_cas_regex.php
+
+; Information added by drush on 2019-06-09
+version = "7.x-4.6.14"
+project = "satellite"
+datestamp = "1560106816"

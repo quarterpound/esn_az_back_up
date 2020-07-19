@@ -1,0 +1,25 @@
+<?php
+/**
+ * @file
+ * Drupal needs this blank file.
+ */
+
+/**
+ * Implements hook_wysiwyg_plugin()
+ */
+function esn_wysiwyg_wysiwyg_plugin($editor, $version) {
+  switch ($editor) {
+    case 'ckeditor':
+    return array(
+      'a11ychecker' => array(
+        'path' => wysiwyg_get_path('ckeditor') . '/plugins/a11ychecker',
+        'buttons' => array(
+          'A11ychecker' => t('Accessibility Checker'),
+        ),
+        'load' => TRUE,
+      ),
+      // TODO add check for balloonpanel and a11ychecker in ckeditor plugins
+    );
+    break;
+  }
+}

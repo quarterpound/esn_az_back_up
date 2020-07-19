@@ -1,0 +1,14 @@
+name = ESN Galaxy API
+description = Makes the list of sections and countries available to other modules.
+core = 7.x
+package = ESN
+configure = admin/config/esn/galaxy_api
+dependencies[] = entity
+dependencies[] = esn_api_tools
+files[] = esn_galaxy_api.module
+files[] = esn_galaxy_api.functions.inc
+
+; Information added by drush on 2019-04-07
+version = "7.x-2.2"
+project = "esn_galaxy_api"
+datestamp = "1554657688"

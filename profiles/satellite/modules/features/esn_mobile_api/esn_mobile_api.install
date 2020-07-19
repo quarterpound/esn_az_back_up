@@ -1,0 +1,18 @@
+<?php
+
+
+function _esn_mobile_api_reset_services_endpoint() {
+  module_load_include('inc', 'esn_mobile_api', 'esn_mobile_api.services');
+  $endpoints = esn_mobile_api_default_services_endpoint();
+  foreach ($endpoints as $endpoint) {
+    services_endpoint_delete($endpoint);
+  }
+  services_endpoint_load_all();
+}
+
+/**
+ * Reset Mobile API endpoints to enable new resources.
+ */
+function esn_mobile_api_update_7001() {
+  _esn_mobile_api_reset_services_endpoint();
+}

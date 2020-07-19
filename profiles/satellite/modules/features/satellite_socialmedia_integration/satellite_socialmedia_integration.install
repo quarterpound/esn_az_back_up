@@ -1,0 +1,26 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Marco
+ * Date: 14.12.2014
+ * Time: 17:57
+ */
+
+/** Setup update dependencies */
+function satellite_socialmedia_integration_update_dependencies() {
+  $dependencies['satellite_socialmedia_integration'][7001] = array(
+    'satellite_base' => 7001,
+  );
+  return $dependencies;
+}
+
+/**
+ *  Revert feature: Enable service links and metatag integration
+ */
+function satellite_socialmedia_integration_update_7001() {
+  $modules = array('service_links', 'service_links_displays', 'widget_services', 'metatag');
+  module_enable($modules, true);
+  esn_base_features_revert(array(
+    'satellite_socialmedia_integration'
+  ));
+}

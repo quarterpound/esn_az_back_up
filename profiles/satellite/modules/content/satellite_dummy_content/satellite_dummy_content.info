@@ -1,0 +1,18 @@
+name = Satellite Dummy Content
+description = allows demo content import, removed after one week.
+core = 7.x
+package = ESN Satellite
+dependencies[] = ctools
+dependencies[] = feeds
+dependencies[] = feeds_xpathparser
+features[ctools][] = feeds:feeds_importer_default:1
+features[features_api][] = api:2
+features[feeds_importer][] = default_events
+features[feeds_importer][] = default_news
+features[feeds_importer][] = default_pages
+features[feeds_importer][] = default_partners
+
+; Information added by drush on 2019-06-09
+version = "7.x-4.6.14"
+project = "satellite"
+datestamp = "1560106816"

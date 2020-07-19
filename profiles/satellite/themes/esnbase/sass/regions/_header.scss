@@ -1,0 +1,750 @@
+/* --------------------------------------------------------------
+EXAMPLE.css
+Lorem ipsum dolor
+-------------------------------------------------------------- */
+
+
+
+
+
+/* GENERAL
+-------------------------------------------------------------- */
+
+#header {
+	position: relative;
+	z-index: 100;
+	height: $header-height-s;
+	background: #fff url('../img/header_topbg.png') 0 -5px repeat-x;
+	box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+	
+
+	@include breakpoint(tablet-landscape) {
+		height: $header-height-m;
+	}
+
+	@include breakpoint(desktop) {
+		height: $header-height-l;
+	}
+
+	.inner {
+		height: inherit;
+	}
+
+	// Hide block headers
+	.block-header {
+		display: none;
+	}
+
+}
+
+
+
+
+/* LOGO
+-------------------------------------------------------------- */
+
+/*
+
+1) No logo -> Text
+2) Default logo -> Logo + Text
+3) Custom logo -> Logo + No text
+
+*/
+
+$bar: 5px;
+$margin: 5px;
+
+#branding {
+	
+	display: table-row;
+	position: absolute;
+	left: 15px;
+	margin-top: $margin * 2;
+	height: $header-height-s - $margin * 2 - $bar;
+
+	@include breakpoint(tablet-landscape) {
+		left: 10px;
+		height: $header-height-m - $margin * 2 - $bar;
+	}
+
+	@include breakpoint(desktop) {
+		height: $header-height-l - $margin * 2 - $bar;
+	}
+
+	a {
+		display: table-row;
+		height: inherit;
+
+		&:hover {
+			text-decoration: none;
+		}
+	}
+
+	#logo {
+		display: table-cell;
+		height: inherit;
+		padding: 0 5px;
+		vertical-align: middle;
+		
+		img {
+			vertical-align: middle;
+
+			body.default-logo & {
+
+				max-height: 30px;
+
+				@include breakpoint(tablet-landscape) {
+					max-height: 36px;
+				}
+
+				@include breakpoint(desktop) {
+					max-height: 42px;
+				}
+			}
+
+			body.custom-logo & {
+
+				max-height: 50px;
+
+				@include breakpoint(tablet-landscape) {
+					max-height: 64px;
+				}
+
+				@include breakpoint(desktop) {
+					max-height: 84px;
+				}
+			}
+		}
+	}
+
+	#site-name {
+		display: table-cell;
+		padding: 0 15px 0 5px;
+		height: inherit;
+		vertical-align: middle;
+		font-size: 22px;
+		color: #999;
+		//border: 1px #eee solid;
+
+		@include breakpoint(tablet-landscape) {
+			//height: 64px;
+			font-size: 28px;
+		}
+
+		@include breakpoint(desktop) {
+			//height: 80px;
+			font-size: 32px;
+		}
+	}
+
+	body.custom-logo & .site-name-logo {
+		display: none !important;
+	}
+	
+}
+
+body.custom-logo {
+	.site-name-logo {
+		display: none;
+	}
+}
+
+/* NAVIGATION
+-------------------------------------------------------------- */
+
+#header:hover #nav-primary ul li a {
+	color: #bbb;
+}
+
+#nav-primary {
+	display: none;
+	position: absolute;
+	right: 15px;
+	bottom: 5px;
+
+	@include breakpoint(tablet-landscape) {
+		display: block;
+	}
+
+	// 1st Level
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		width: auto;
+
+		li {
+			display: inline-block;
+			margin: 0 -2px;
+			padding: 0;
+			list-style: none;
+			vertical-align: middle;
+			border-radius: $radius;
+
+			&.menuparent {
+				border-radius: $radius $radius 0 0;
+			}
+			
+			a {
+				display: inline-block;
+				padding: 0 10px;
+				font-family: $font-nav-firstlevel;
+				font-weight: bold;
+				font-size: $tablet-nav-fontsize-m;
+				line-height: $tablet-nav-height-m;
+				color: $medium-gray;
+				text-decoration: none;
+				text-transform: uppercase;
+				
+
+				@include breakpoint(desktop) {
+					padding: 0 12px;
+					font-size: $desktop-nav-fontsize-m;
+					line-height: $desktop-nav-height-m;
+				}
+			}
+		}
+
+		li.sfHover, li:hover {
+			background: $esn-blue;
+			a { color: #fff !important; }
+		}
+		
+	}
+
+	.sf-menu {
+		ul {
+			a {
+				// expand anchor over all list item so arrow is on right and user can click on whole menu item not just text
+				width: 100%;
+			}
+		}
+
+		> li {
+			> .sf-depth-1{
+				> .sf-sub-indicator {
+					display: none;
+				}
+			}
+		}
+	}
+
+	// 2nd Level
+
+	ul ul {
+		max-width: 200px;
+		padding: 5px 0;
+		background: $esn-blue;
+		box-shadow: 0 3px 0 rgba(0,0,0,0.05);
+		border-radius: 0 $radius $radius $radius;
+
+		@include breakpoint(desktop) {
+			padding: 5px 0;
+		}
+
+		li {
+			margin: 0;
+			border-radius: 0;
+
+			a {
+				color: #fff;
+				font-size: 12px;
+				line-height: 16px;
+				padding: 7px 10px;
+				font-family: $font-nav-sublevel;
+				@include breakpoint(desktop) {
+					padding: 7px 12px;
+				}
+			}
+		}
+
+		li:hover {
+			background: rgba(0,0,0,0.2);
+		}
+	}
+
+	.sf-menu li:hover > ul, .sf-menu li.sfHover > ul {
+		top: $tablet-nav-height-m;
+		@media all and (min-width: 968px) { top: $desktop-nav-height-m; }
+	}
+
+	// 3nd Level
+
+	ul ul ul {
+		padding: 0;
+		top: 1em;
+
+		li {
+			background: rgba(0,0,0,0.2);
+		}
+	}
+
+	.sf-menu li li:hover > ul, .sf-menu li li.sfHover > ul {
+		top: 0;
+	}
+
+	// SIZE COMBINATIONS
+
+	// Small Nav
+
+	body.nav-s & {
+
+		ul li a {
+			font-size: $tablet-nav-fontsize-s;
+			line-height: $tablet-nav-height-s;
+			@include breakpoint(desktop) {
+				font-size: $desktop-nav-fontsize-s;
+				line-height: $desktop-nav-height-s;
+			}
+		}
+
+		ul ul li a {
+			font-size: 12px;
+			line-height: 16px;
+		}
+		
+		.sf-menu li:hover > ul, .sf-menu li.sfHover > ul {
+			top: $tablet-nav-height-s;
+			@include breakpoint(desktop) { top: $desktop-nav-height-s; }
+		}
+	}
+
+	// Large Nav
+
+	body.nav-l & {
+
+		ul li a {
+			font-size: $tablet-nav-fontsize-l;
+			line-height: $tablet-nav-height-l;
+			@include breakpoint(desktop) {
+				font-size: $desktop-nav-fontsize-l;
+				line-height: $desktop-nav-height-l;
+			}
+		}
+
+		ul ul li a {
+			font-size: 12px;
+			line-height: 18px;
+		}
+		
+		.sf-menu li:hover > ul, .sf-menu li.sfHover > ul {
+			top: $tablet-nav-height-l;
+			@include breakpoint(desktop) { top: $desktop-nav-height-l; }
+		}
+	}
+
+	// COLOR COMBINATIONS
+
+
+	.esn-blockcolor-blue {
+		ul li.sfHover, ul li:hover, ul ul { background: $esn-blue; }
+		ul ul li:hover {
+			background: rgba(0,0,0,0.2);
+		}
+	}
+
+	.esn-blockcolor-purple {
+		ul li.sfHover, ul li:hover, ul ul { background: $esn-pink; }
+		ul ul li:hover {
+			background: rgba(0,0,0,0.2);
+		}
+	}
+
+	.esn-blockcolor-orange {
+		ul li.sfHover, ul li:hover, ul ul { background: $esn-orange; }
+		ul ul li:hover {
+			background: rgba(0,0,0,0.2);
+		}
+	}
+
+	.esn-blockcolor-green {
+		ul li.sfHover, ul li:hover, ul ul { background: $esn-green; }
+		ul ul li:hover {
+			background: rgba(0,0,0,0.2);
+		}
+	}
+
+	.esn-blockcolor-dark-blue {
+		ul li.sfHover, ul li:hover, ul ul { background: $esn-dark-blue; }
+		ul ul li:hover {
+			background: rgba(0,0,0,0.2);
+		}
+	}
+}
+
+#nav-secondary {
+	display: none;
+	position: absolute;
+	right: 15px;
+	
+
+	@include breakpoint(tablet-landscape) {
+		display: block;
+		top: 12px;
+	}
+
+	@include breakpoint(desktop) {
+		top: 20px;
+	}
+
+	.block {
+		display: inline-block;
+		margin-left: 5px;
+		vertical-align: middle;
+	}
+}
+
+#header #block-search-form {
+	
+	display: inline-block;
+	position: relative;
+	width: 30px;
+	height: 30px;
+	box-sizing: border-box !important;
+
+	&:hover {
+		
+	}
+
+	.block-content {
+		position: absolute;
+		display: inline-block;
+		right: 0;
+		top: -4px;
+		background: #fff;
+	}
+
+	label {
+		display: inline-block;
+		height: 30px;
+		width: 30px;
+		clip: auto;
+		top: 3px;
+		right: 5px;
+		text-indent: -9999px;
+		opacity: 0.2;
+		background-image: url('../img/mobile_search.png');
+		background-position: right center;
+		background-repeat: no-repeat;
+		background-size: 24px;
+		cursor: pointer;
+
+		&:hover {
+			opacity: 0.6;
+		}
+	}
+
+	.form-item-search-block-form input {
+		border-radius: 0;
+		border: 0;
+		box-shadow: none;
+		background: none;
+		padding: 7px 30px 7px 0;
+		cursor: pointer;
+		width: 0;
+		background: none;
+		border: 2px transparent solid;
+		font-size: 12px;
+
+		&:focus {
+			cursor: auto;
+			width: 200px;
+			border-color: #eee;
+			padding-left: 10px;
+		}
+	}
+
+	.form-actions {
+		display: none;
+	}
+}
+
+/* MOBILE NAV
+-------------------------------------------------------------- */
+
+#mobile-menu {
+
+	display: inline-block;
+	position: absolute;
+	left: -15px;
+	top: 16px;
+
+	opacity:0;  
+	-webkit-animation:fadeIn ease-in 1;  
+	-moz-animation:fadeIn ease-in 1;
+	animation:fadeIn ease-in 1;
+
+	-webkit-animation-fill-mode:forwards;
+	-moz-animation-fill-mode:forwards;
+	animation-fill-mode:forwards;
+
+	-webkit-animation-duration:.5s;
+	-moz-animation-duration:.5s;
+	animation-duration:.5s;
+
+	-webkit-animation-delay: 0.2s;
+	-moz-animation-delay: 0.2s;
+	animation-delay: 0.2s;
+
+	a {
+		background-image: url('../img/mobile_menu.png');
+		display: inline-block;
+		width: 42px;
+		height: 42px;
+		text-indent: -9999px;
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-size: 36px;
+		opacity: 0.2;
+		
+		&:hover {
+			opacity: 0.5;
+		}
+	}
+
+	@include breakpoint(tablet-landscape) {
+		display: none;
+	}
+}
+
+#mobile-nav {
+	position: absolute;
+	right: 20px;
+	bottom: 10px;
+
+	#mobile-search {
+		display: none;
+	}
+
+	div {
+		display: inline-block;
+	}
+
+	#mobile-search a, #mobile-menu a {
+		display: inline-block;
+		width: 34px;
+		height: 42px;
+		text-indent: -9999px;
+		background-position: center center;
+		background-repeat: no-repeat;
+		//padding: 5px;
+		//border-radius: 5px;
+		//padding: 5px 5px 5px 5px;
+		//margin-left: 3px;
+		background-size: 36px;
+		opacity: 0.2;
+		//background-color: #eee;
+		//border: 1px solid #ddd;
+		//box-shadow: 0 2px 2px rgba(0,0,0,0.05), inset 0 -4px 0px rgba(0,0,0,0.05);
+
+		&:hover {
+			opacity: 0.5;
+			//background-color: #666;
+			//box-shadow: 0 2px 2px rgba(0,0,0,0.05), inset 0 -4px 0px rgba(0,0,0,0.2);
+		}
+	}
+
+	#mobile-search a {
+		background-image: url('../img/mobile_search.png');
+	}
+
+	#mobile-menu a {
+		background-image: url('../img/mobile_menu.png');
+	}
+
+	@include breakpoint(tablet-landscape) {
+		display: none;
+	}
+
+	@media
+	only screen and (-webkit-min-device-pixel-ratio: 2),
+	only screen and (   min--moz-device-pixel-ratio: 2),
+	only screen and (     -o-min-device-pixel-ratio: 2/1),
+	only screen and (        min-device-pixel-ratio: 2),
+	only screen and (                min-resolution: 192dpi),
+	only screen and (                min-resolution: 2dppx) { 
+		
+		#mobile-search a {
+			//background-image: url('../img/mobile_search@2x.png');
+			//background-size: 75%;
+		}
+
+		#mobile-menu a {
+			//background-image: url('../img/mobile_menu@2x.png');
+			//background-size: 75%;
+		}		
+	}
+}
+
+
+
+/* SHELF
+-------------------------------------------------------------- */
+
+#shelf {
+
+	background: #333;
+	box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+
+	&, a {
+		color: #fff;
+		text-decoration: none;
+	}
+
+	ul, li {
+		margin: 0;
+		padding: 0;
+	}
+
+	.shelf-item {
+		display: none;
+	}
+
+	#shelf-menu {
+
+		// 1st Level
+
+		ul {
+
+			li {
+
+				border-top: 1px solid #444;
+
+				a {
+					display: block;
+					padding: 12px 20px;
+					font-size: 18px;
+					font-family: $font-mobile-nav;
+					font-weight: bold;
+					text-transform: uppercase;
+
+					&:hover {
+						background-color: rgba(0,0,0,0.1);
+						color: #fff;
+					}
+				}
+			}
+
+			li:hover {
+				//background: rgba(0,0,0,0.2);
+			}
+
+
+			li:first-child {
+				border-top: none;
+				//a {	box-shadow: inset 0 5px 5px rgba(0,0,0,0.2); }
+			}
+		}
+
+		// 2nd Level
+
+		ul ul {
+
+			//border-top: 1px solid #444;
+
+
+			
+			li {
+
+				background: #222;
+				border-top: 1px dotted #333;
+
+				a {
+					padding-left: 40px;
+					font-size: 14px;
+					color: #777;
+				}
+			}
+
+
+			
+		}
+
+		// 3rd Level
+		
+		ul ul ul {
+
+			//border-top: 1px dotted #333;
+
+			li {
+				background: #111;
+				border-top: 1px dotted #222;
+
+				a {
+					padding-left: 60px;
+					font-size: 12px;
+					color: #444;
+				}
+			}
+		}
+
+		//
+
+		li.expanded > a {
+			background: url('../img/shelf_menu_closed.png') center right no-repeat;
+		}
+
+		li.expanded > a.opened {
+			background-image: url('../img/shelf_menu_opened.png');
+		}
+	}
+
+	#shelf-search {
+
+		padding: 12px 20px;
+
+		form {
+			margin: 0;
+		}
+
+		label, .form-submit {
+			display: none;
+		}
+
+		.form-text {
+			width: 100%;
+			border: none;
+			font-size: 16px;
+			border-radius: 5px;
+			padding: 10px 10px;
+			box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+		}
+	}
+
+	// Hide when the screen is big
+
+	@include breakpoint(tablet-landscape) {
+		display: none;
+	}
+
+}
+
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* 
+-------------------------------------------------------------- */
+
+

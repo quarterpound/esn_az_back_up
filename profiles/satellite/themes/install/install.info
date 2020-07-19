@@ -1,0 +1,39 @@
+; -------------------------------------------------
+; INFO
+; -------------------------------------------------
+
+name          = Install
+description   = Install theme for ESN Satellite
+package       = ESN
+version       = 0.1
+core          = 7.x
+
+; -------------------------------------------------
+; REGIONS
+; -------------------------------------------------
+
+regions[help] =           Help
+regions[content] =        Content
+regions[sidebar_first] =  Sidebar
+
+
+
+; -------------------------------------------------
+; CSS
+; -------------------------------------------------
+
+stylesheets[all][] = css/screen.css
+
+
+
+; -------------------------------------------------
+; SCRIPTS
+; -------------------------------------------------
+
+; scripts[] = js/script.js
+
+
+; Information added by drush on 2019-06-09
+version = "7.x-4.6.14"
+project = "satellite"
+datestamp = "1560106816"

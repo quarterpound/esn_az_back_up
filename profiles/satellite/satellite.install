@@ -1,0 +1,402 @@
+<?php
+
+/**
+ * Minimum supported version of PHP.
+ */
+
+use ESN\Satellite\Notifications\NotificationManager;
+
+require_once 'satellite.const.inc';
+
+include_once 'satellite.install_steps.inc';
+
+function satellite_schema() {
+  $schema[SATELLITE_NOTIFICATIONS_TABLE] = [
+    'description' => 'Satellite notification messages',
+    'fields' => [
+      'mid' => [
+        'description' => 'Drupal entity ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'description' => 'Message title/caption',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'content' => [
+        'description' => 'Message content (HTML)',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+      'type' => [
+        'description' => 'Message type (status, warning, error)',
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => 'status',
+      ],
+      'display_from' => [
+        'description' => 'Display start of this message (unix timestamp)',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'display_to' => [
+        'description' => 'Display start of this message (unix timestamp)',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'version' => [
+        'description' => 'Satellite version(s) to show this message on',
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => FALSE,
+      ],
+      'body_class' => [
+        'description' => 'CSS class to apply to the HTML body',
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => FALSE,
+      ],
+      'inject_css' => [
+        'description' => 'CSS styles to apply to the HTML body',
+        'type' => 'text',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'conditions' => [
+        'description' => 'Conditions to match for showing this message (JSON)',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+      'imported' => [
+        'description' => 'Timestamp when the data has last been updated from Galaxy',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['mid'],
+      'unique keys' => [
+      'mid' => ['mid'],
+    ],
+    'indexes' => [
+      'title' => ['title'],
+      'display' => ['display_from', 'display_to'],
+      'imported' => ['imported'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function satellite_install() {
+  // Disable notification manager during site installation
+  variable_set('satellite_notification_initializing', TRUE);
+
+  // set the satellite theme
+  satellite_install_set_theme();
+
+  // fetch the esn international news
+  satellite_install_aggregator();
+
+  // set the "Home" menu item
+  satellite_install_set_menu();
+
+  // place the blocks in the satellite regions
+  satellite_install_place_blocks();
+  
+  // enable caching and set css and js aggregation to speed up websites
+  satellite_install_set_cache_settings();
+
+  // Enable default permissions for system roles.
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content', 'access news feeds', 'access site-wide contact form'));
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access content', 'access news feeds', 'access site-wide contact form'));
+  variable_set('user_register', 0);
+  variable_set('jquery_update_jquery_version', '1.7');
+  // Fixes http://git.esn.org/satellite/satellite_profile/issues/65
+  // Enable Superfish Auto-arrows for the main menu.
+  variable_set('superfish_arrow_1', TRUE);
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function satellite_form_install_configure_form_alter(&$form, $form_state) {
+  // set the site name later to the Section name
+  $form['site_information']['site_name']['#value'] = 'ESN';
+  $form['site_information']['site_name']['#access'] = FALSE;
+  // set the default admin account to admin
+  $form['admin_account']['account']['name']['#default_value'] = 'admin';
+  $form['site_information']['site_mail']['#default_value'] = 'it@esn.org';
+  $form['admin_account']['account']['mail']['#default_value'] = '';
+
+  // Don't check for updates, ESN will tell you!
+  $form['update_notifications']['update_status_module']['#default_value'] = array(1 => FALSE, 2 => FALSE); // no emails please
+  $form['update_notifications']['satellite_disclaimer'] = array(
+    '#markup' => st('You will be informed about Satellite updates even if you choose to not check for Drupal updates. Drupal updates are included in the Satellite updates.'),
+    '#weight' => -10,
+  );
+
+	$esnCountries = _satellite_get_supported_countries();
+	$form['server_settings']['site_default_country']['#options'] = $esnCountries;
+}
+
+/**
+ * Implements hook_install_tasks().
+ */
+function satellite_install_tasks(&$install_state) {
+  $tasks = array();
+
+  $tasks['satellite_configuration'] = array(
+    'display_name' => st('Configure Satellite'),
+    'display' => true,
+    'type' => 'form',
+    'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
+  );
+  $tasks['satellite_final_install'] = array(
+    'display_name' => st('Apply Configuration'),
+    'display' => true,
+    'type' => 'batch',
+    'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
+  );
+
+  return $tasks;
+}
+
+/**
+ * Revert all features.
+ */
+function satellite_update_7001() {
+  esn_base_features_revert(array(
+    'esn_base', 'esn_cas', 'esn_wysiwyg',
+    'satellite_base', 'satellite_events', 'satellite_news',
+    'satellite_pages', 'satellite_spotlight' ));
+}
+
+/**
+ * Move the login button to the footer.
+ */
+function satellite_update_7002() {
+  db_update('block')
+    ->fields(array('region' => 'footer_bottom'))
+    ->condition('module', 'satellite_base', '=')
+    ->condition('delta', 'login', '=')
+    ->condition('status', 1, '=')
+    ->condition('region', 'footer_third', '=')
+    ->execute();
+}
+
+/**
+ * Assign all permissions to the administrator role.
+ */
+function satellite_update_7003() {
+  $admin_role = user_role_load_by_name('administrator');
+  user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
+}
+
+/**
+ * Revert all features and add event types
+ */
+function satellite_update_7004() {
+  esn_base_features_revert(array(
+    'esn_base', 'esn_cas',
+    'satellite_base', 'satellite_events', 'satellite_news',
+    'satellite_pages', 'satellite_spotlight' ));
+  // first revert the event feature then add the terms.
+  $context = array();
+  satellite_add_event_types($context);
+}
+
+/**
+ * Revert some features to make sure the partners view is reverted
+ */
+function satellite_update_7005() {
+  esn_base_features_revert(array(
+    'esn_base', 'esn_cas',
+    'satellite_base', 'satellite_partners',
+  ));
+  // reset the update message so that update.php does the trick.
+  variable_set('satellite_callhome_message', FALSE);
+}
+
+/**
+ * Obsolete upadte hook, does nothing ;)
+ */
+function satellite_update_7006() {
+  // We discontinue using Multiupload File & Image Field Widgets as of 2016-08-08 in favor of File Resumable Upload
+  // and thus do nothing here anymore.
+}
+
+/**
+ * Enable custom contextual links.
+ */
+function satellite_update_7007() {
+  module_enable(array('ccl', 'ccl_actions'));
+  esn_base_features_revert(array(
+    'satellite_base'
+  ));
+}
+
+/**
+ * Enable ESN mobile API
+ */
+function satellite_update_7008() {
+  module_enable(array('esn_mobile_api'));
+  esn_base_features_revert(array(
+    'satellite_settings','esn_api_tools','esn_galaxy_api','satellite_callhome'
+  ));
+}
+
+/**
+ * Update email templates to work with realname. Replace [user:name] with [user:name-raw]
+ */
+function satellite_update_7009() {
+  _satellite_update_usermail_templates('register_no_approval_required_body', true);
+  _satellite_update_usermail_templates('register_admin_created_body', true);
+  _satellite_update_usermail_templates('status_activated_body', true);
+}
+
+/**
+ * Enable Satellite Site Metadata Helper
+ */
+function satellite_update_7010() {
+  module_enable(array('satellite_site_meta'));
+}
+
+/**
+ * Make 3rd level of main menu visible by showing an arrow if sub-items exists.
+ */
+// Fixes http://git.esn.org/satellite/satellite_profile/issues/65
+function satellite_update_7011() {
+  // Enable Superfish Auto-arrows for the main menu.
+  variable_set('superfish_arrow_1', TRUE);
+}
+
+/**
+ * Enable and preconfigure EU Cookie Compliance.
+ */
+function satellite_update_7012() {
+  satellite_preconfigure_eu_cookie_compliance(TRUE);
+}
+
+/**
+ * Update ESN Callhome information (Satellite 4.6)
+ */
+function satellite_update_7013() {
+  // Remove the Callhome call because due to a later change of loading phpseclib
+  // using a simple class autoloader instead of setting include paths, as the
+  // autoloader itself is initialized in hook_init() which is only available after
+  //  clearing all caches after finishing the update process, it doesn't work at
+  // this point anymore.
+}
+
+/**
+ * Disable multiupload_filefield_widget & multiupload_imagefield_widget in favor of file_resup
+ */
+function satellite_update_7014() {
+  if (module_exists('multiupload_imagefield_widget')) {
+    module_disable(array('multiupload_imagefield_widget'));
+  }
+  if (module_exists('multiupload_filefield_widget')) {
+    module_disable(array('multiupload_filefield_widget'));
+  }
+}
+
+/**
+ * Enable file_resup and revert features.
+ */
+function satellite_update_7015() {
+  module_enable(array('file_resup'));
+  $revert = array(
+    'satellite_blog',
+    'satellite_news',
+    'satellite_pages',
+    'satellite_partners',
+    'satellite_partners_external',
+    'satellite_events'
+  );
+  foreach ($revert as $feature) {
+    if (module_exists($feature)){
+      esn_base_features_revert(array($feature));
+    }
+  }
+}
+
+/**
+ * Set ESN install theme for maintenance pages (updates etc.)
+ */
+function satellite_update_7016() {
+  variable_set('maintenance_theme', 'install');
+}
+
+/**
+ * Enable Readonlymode module
+ */
+function satellite_update_7017() {
+  module_enable(array('readonlymode'), TRUE);
+}
+
+/**
+ * Initialize Notification Manager, downloading messages from ITcom
+ */
+function satellite_update_7018() {
+  // Don't execute this here! It was used in 4.6.13 only.
+}
+
+/**
+ * Install Antibot
+ */
+function satellite_update_7019() {
+  module_enable(array('antibot'), TRUE);
+}
+
+/**
+ * Create Db structures for Satellite notification messages
+ */
+function satellite_update_7020() {
+  if (!db_table_exists(SATELLITE_NOTIFICATIONS_TABLE)) {
+    $table = satellite_schema()[SATELLITE_NOTIFICATIONS_TABLE];
+    db_create_table(SATELLITE_NOTIFICATIONS_TABLE, $table);
+  }
+}
+
+/**
+ * Delete satellite messages file when updating from 4.6.13.
+ */
+function satellite_update_7021() {
+  static $filename = 'public://esn/' . NotificationManager_FILENAME;
+  /** @var DatabaseStatementInterface $query */
+  $query = db_select('file_managed', 'f')
+    ->fields('f')
+    ->condition('uri', $filename)
+    ->execute();
+  $file = $query->fetchAssoc();
+  if (isset($file['fid']) && ($file = file_load($file['fid']))) {
+    file_delete($file, TRUE);
+  }
+}
+
+/**
+ * Initialize Notification Manager, downloading messages from ITcom
+ */
+function satellite_update_7022() {
+  // Eexecute this here for >= 4.6.14 after the database table has been created.
+  satellite_register_autoloader();
+  if (($satellite_messages = getenv('SATELLITE_MESSAGES'))) {
+    $satellite_messages = url($satellite_messages, ['absolute' => TRUE]);
+    variable_set('satellite_notification_messages_url', $satellite_messages);
+  }
+  NotificationManager::update();
+}

@@ -1,0 +1,197 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Marco
+ * Date: 08.12.2014
+ * Time: 03:03
+ */
+
+function _satellite_blog_insert_blog_block() {
+  module_load_include('inc', 'satellite', 'api');
+  $module = 'views';
+  $delta = 'blog-block';
+  $exists = db_select('block')
+    ->condition('module', $module, '=')
+    ->condition('delta', $delta, '=')
+    ->condition('theme', SATELLITE_THEME, '=')
+    ->countQuery()
+    ->execute()
+    ->fetchField();
+  if (!$exists) {
+    $blocks = array(
+      array(
+        'module' => 'views',
+        'delta' => 'blog-block',
+        'icon' => 'speechbubbles',
+        'theme' => SATELLITE_THEME,
+        'status' => 1,
+        'weight' => 10,
+        'region' => 'middle_sidebar',
+        'visibility' => 1,
+        'pages' => '<front>',
+        'cache' => -1,
+      ),
+    );
+    satellite_insert_blocks($blocks);
+  }
+}
+
+function _satellite_blog_delete_blog_block() {
+  db_delete('block')
+   ->condition('module', 'views')
+   ->condition('delta', 'blog-block')
+   ->execute();
+}
+
+function _satellite_blog_set_blog_block_status($enable = true) {
+  db_update('block')
+    ->condition('module', 'views')
+    ->condition('delta', 'blog-block')
+    ->fields(array('status' => $enable ? 1 : 0))
+    ->execute();
+}
+
+function _satellite_blog_add_menu() {
+  // Create a Calendar link in the main menu.
+  $t = get_t();
+  $item = array(
+    'link_title' => $t('Blog'),
+    'link_path' => 'blog',
+    'menu_name' => 'main-menu',
+    'weight' => 1,
+  );
+  menu_link_save($item);
+  menu_rebuild();
+}
+
+function satellite_blog_add_categories(&$context) {
+  $vocabulary = taxonomy_vocabulary_machine_name_load('blog_category');
+
+  $terms = array(
+    'Board Updates' => 'Board Updates',
+    'National Events' => 'National Events',
+    'Social Erasmus' => 'Social Erasmus',
+    'ExchangeAbility' => 'ExchangeAbility',
+    'AGM' => 'AGM',
+    'Erasmus+' => 'Erasmus+',
+  );
+
+  foreach ($terms as $name => $description) {
+    $values = array();
+    $values['vocabulary_machine_name'] = $vocabulary->machine_name;
+    $values['vid'] = $vocabulary->vid;
+    $values['name'] = $name;
+
+    $entity = entity_create('taxonomy_term', $values);
+    entity_save('taxonomy_term', $entity);
+  }
+  $context['message'] = st('Added blog categories.');
+}
+
+/**
+ * Implements hook_install()
+ */
+function satellite_blog_install() {
+  _satellite_blog_insert_blog_block();
+}
+
+/**
+ * Implements hook_uninstall()
+ */
+function satellite_blog_uninstall() {
+  _satellite_blog_delete_blog_block();
+}
+
+/**
+ * Implements hook_enable()
+ */
+function satellite_blog_enable() {
+  _satellite_blog_add_menu();
+  _satellite_blog_set_blog_block_status(true);
+}
+
+/**
+ * Implements hook_disable()
+ */
+function satellite_blog_disable() {
+  menu_link_maintain('system', 'delete', 'blog', null);
+  _satellite_blog_set_blog_block_status(false);
+}
+
+/** Setup update dependencies */
+function satellite_blog_update_dependencies() {
+  $dependencies['satellite_blog'][7003] = array(
+    'satellite_base' => 7001,
+  );
+  return $dependencies;
+}
+
+/**
+ * Set the permissions for administrator and editor
+ */
+function satellite_blog_set_permissions(){
+  $editor_permissions = array(     
+    'create blog content',
+    'edit own blog content',
+    'edit any blog content',
+    'delete own blog content',
+    'delete any blog content',
+    'override blog published option',
+    'override blog promote to front page option',
+  );
+  $editor_role = user_role_load_by_name('editor');
+  user_role_grant_permissions($editor_role->rid, $editor_permissions);
+  $admin_permissions = array(     
+    'access comments',
+    'administer comments',
+    'administer realname',
+    'create blog content',
+    'delete any blog content',
+    'delete own blog content',
+    'edit any blog content',
+    'edit own blog content',
+    'edit own comments',
+    'enter blog revision log entry',
+    'override blog authored by option',
+    'override blog authored on option',
+    'override blog promote to front page option',
+    'override blog published option',
+    'override blog revision option',
+    'override blog sticky option',
+    'post comments',
+    'skip comment approval',
+  );
+  $admin_role = user_role_load_by_name('administrator');
+  user_role_grant_permissions($admin_role->rid, $admin_permissions);
+}
+
+/**
+ * Add the Blog block to frontpage.
+ */
+function satellite_blog_update_7001() {
+  _satellite_blog_insert_blog_block();
+}
+
+/**
+ * Add Blog categories
+ */
+function satellite_blog_update_7002() {
+  _satellite_blog_add_categories();
+  _satellite_blog_add_menu();
+}
+
+/**
+ *  Revert feature: Enable service links and metatag integration
+ */
+function satellite_blog_update_7003() {
+  esn_base_features_revert(array(
+    'satellite_base'
+  ));
+}
+
+/**
+ * Set the permissions for the administrator and editor roles
+ */
+function satellite_blog_update_7004() {
+  satellite_blog_set_permissions();
+}

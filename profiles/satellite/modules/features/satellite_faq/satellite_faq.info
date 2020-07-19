@@ -1,0 +1,24 @@
+name = Satellite FAQ
+description = Adds a Frequently asked questions field to events
+core = 7.x
+package = ESN Satellite
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = field_collection
+dependencies[] = strongarm
+dependencies[] = text
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[field_base][] = field_faq
+features[field_base][] = field_faq_answer
+features[field_base][] = field_faq_question
+features[field_instance][] = field_collection_item-field_faq-field_faq_answer
+features[field_instance][] = field_collection_item-field_faq-field_faq_question
+features[field_instance][] = node-event-field_faq
+features[variable][] = field_bundle_settings_field_collection_item__field_faq
+features_exclude[dependencies][satellite_faq] = satellite_faq
+
+; Information added by drush on 2019-01-27
+version = "7.x-1.x-dev"
+project = "satellite_faq"
+datestamp = "1548589223"

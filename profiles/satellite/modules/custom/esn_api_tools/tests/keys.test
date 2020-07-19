@@ -1,0 +1,48 @@
+<?php
+
+class EsnApiToolsKeyManagementTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name'        => 'ESN API Tools - Key management',
+      'description' => 'Test the management of (RSA) public and private keys.',
+      'group'       => 'ESN API Tools',
+    );
+  }
+
+  private $key_file = 'tests/keys.php';
+
+  protected function setUp() {
+    parent::setUp();
+    $this->key_file = _esn_api_tools_get_keyfile($this->key_file);
+    file_put_contents($this->key_file, "<?php\n\n");
+  }
+
+  protected function tearDown() {
+    parent::tearDown();
+    unlink($this->key_file);
+  }
+
+  public function testAddKeyToFile() {
+    $key = esn_api_tools_create_key_pair();
+    $result = esn_api_tools_write_public_key($key['id'], $key['publickey'], $this->key_file);
+    $this->assertTrue($result, 'Public Key was written to key file');
+
+    $public_key = array_pop(esn_api_tools_get_public_key($key['id'], $this->key_file));
+    $this->assertEqual($public_key, $key['publickey'], 'Key was re-read from file.');
+
+    $newest_key = array_pop(esn_api_tools_get_public_key(false, $this->key_file));
+    $this->assertEqual($newest_key, $key['publickey'], 'Newest key was re-read from file.');
+  }
+
+  public function testAddKeyToVariable() {
+    $key = esn_api_tools_create_key_pair();
+    $result = esn_api_tools_write_private_key($key['id'], $key['privatekey']);
+    $this->assertTrue($result, 'Private Key was written to key file');
+
+    $public_key = esn_api_tools_get_private_key($key['id']);
+    $this->assertEqual($public_key, $key['privatekey'], 'Key was re-read from storage.');
+
+    $newest_key = esn_api_tools_get_private_key(false);
+    $this->assertEqual($newest_key, $key['privatekey'], 'Newest key was re-read from storage.');
+  }
+}

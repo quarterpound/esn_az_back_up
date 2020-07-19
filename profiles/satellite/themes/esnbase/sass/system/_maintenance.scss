@@ -1,0 +1,67 @@
+
+html.maintenance-page {
+	height: 100%;
+	width: 100%;
+}
+
+body.maintenance-page {
+	
+	background: $esn-blue;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+
+	@include breakpoint(tablet-portrait) {
+		display: table;
+		position: relative;
+	}
+
+	display: table;
+	position: relative;
+
+	#wrapper {
+		padding: 0;
+		margin: 0;
+		display: table-cell;
+		vertical-align: middle;
+	}
+
+	#maintenance {
+
+		margin: 0 auto;
+		min-width: 320px;
+		width: auto;
+		max-width: 600px;
+		padding-top: 20px;
+
+		#maintenance-icon {
+			width: 240px;
+			height: 240px;
+			background: $esn-blue url(../img/maintenance/icon_maintenance.png) center center no-repeat;
+			background: url(../img/maintenance/icon_maintenance.png) center center no-repeat;
+			background-size: 100%;
+			//border-radius: 100%;
+			margin: 0 auto;
+
+
+			@include breakpoint(tablet-portrait) {
+				width: 280px;
+				height: 280px;
+			}
+		}
+
+		#maintenance-message {
+			font-size: 20px;
+			line-height: 26px;
+			color: #fff;
+			padding: 40px 20px;
+
+			@include breakpoint(tablet-portrait) {
+				font-size: 24px;
+				line-height: 30px;
+			}
+		}
+	}
+
+}

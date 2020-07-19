@@ -1,0 +1,48 @@
+// Socialmedia settings
+$sprite: 36;
+$icon:   32;
+
+#socialmedia {
+
+	ul{
+		padding: 0;
+		margin: 0;
+
+		li {
+			display: inline-block;
+			white-space: nowrap;
+			list-style: none outside none;
+			margin: 0 2px 4px 0;
+
+			&:last-child {
+				margin-right: 0;
+			}
+
+			a {
+				display: inline-block;
+				height: $sprite * 1px;                        
+				width: $sprite * 1px;
+				text-indent: -9999px;
+				background-position: center center;
+				background-repeat: no-repeat;
+				background-size: $icon * 1px;
+				background-color: rgba(255,255,255,0.2);
+				border-radius: 100px;
+				box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+
+				&:hover {
+					opacity: 1;
+				}
+			}
+		}
+	}
+
+.socialmedia-twitter a	{ background-color: #29c5f6; background-image: url(../img/socialmedia-twitter.png);}
+.socialmedia-facebook a	{ background-color: #3b5998; background-image: url(../img/socialmedia-facebook.png);}
+.socialmedia-youtube a	{ background-color: #dd332c; background-image: url(../img/socialmedia-youtube.png);}
+.socialmedia-vimeo a	{ background-color: #4da9cd; background-image: url(../img/socialmedia-vimeo.png);}
+.socialmedia-gplus a	{ background-color: #d84a38; background-image: url(../img/socialmedia-gplus.png);}
+.socialmedia-flickr a	{ background-color: #f0f0f0; background-image: url(../img/socialmedia-flickr.png);}
+.socialmedia-instagram a {background-color: #135379; background-image: url(../img/socialmedia-instagram.png);}
+.socialmedia-linkedin a {background-color: #0077B5; background-image: url(../img/socialmedia-linkedin.png);}
+}

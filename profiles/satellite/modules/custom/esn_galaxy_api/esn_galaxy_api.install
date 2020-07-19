@@ -1,0 +1,458 @@
+<?php
+
+/**
+ * Minimum supported version of PHP.
+ */
+define('GALAXY_API_MINIMUM_PHP', '5.3.2');
+
+define('ESN_COUNTRY_TABLE', 'esn_country');
+define('ESN_SECTION_TABLE', 'esn_section');
+
+/**
+ * Implements hook_install().
+ */
+function esn_galaxy_api_install() {
+  // populate the sections list when installing.
+  module_load_include('inc', 'esn_galaxy_api', 'esn_galaxy_api.load');
+  _esn_galaxy_api_save_countries();
+  _esn_galaxy_api_save_sections();
+  variable_set('esn_galaxy_api_cron', 1);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function esn_galaxy_api_uninstall() {
+}
+
+/**
+ * Implements hook_schema().
+ */
+function esn_galaxy_api_schema() {
+  $schema[ESN_SECTION_TABLE] = array(
+    'description' => 'A list of all ESN sections.',
+    'fields' => array(
+      'section_id' => array(
+        'description' => 'Drupal entity ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'code' => array(
+        'description' => 'Section Code',
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'Section Name',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'street' => array(
+        'description' => 'Street Name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'postaladdress' => array(
+        'description' => 'Postal Address',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'city' => array(
+        'description' => 'City',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'country_code' => array(
+        'description' => 'Country Code',
+        'type' => 'varchar',
+        'length' => 2,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'website' => array(
+        'description' => 'website url',
+        'type' => 'varchar',
+        'length' => 150,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'website_logo' => array(
+        'description' => 'website logo url',
+        'type' => 'varchar',
+        'length' => 150,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'longitude' => array(
+        'description' => 'Longitude',
+        'type' => 'numeric',
+        'precision' => 18,
+        'scale' => 12,
+        'not null' => FALSE,
+      ),
+      'latitude' => array(
+        'description' => 'Latitude',
+        'type' => 'numeric',
+        'precision' => 18,
+        'scale' => 12,
+        'not null' => FALSE,
+      ),
+      'country_id' => array(
+        'description' => 'Reference to ESN Country',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'last_updated' => array(
+        'description' => 'Timestamp when the data has last been updated from Galaxy',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+    ),
+    'unique keys' => array(
+      'code' => array('code'),
+    ),
+    'foreign keys' => array(
+      'section_country' => array(
+        'table' => ESN_COUNTRY_TABLE,
+        'columns' => array('country_id' => 'country_id'),
+      ),
+    ),
+    'indexes' => array(
+      'countries' => array('country_code'),
+      'esn_section_names' => array('name'),
+      'esn_sections_in_country' => array('country_code', 'name'),
+    ),
+    'primary key' => array('section_id'),
+  );
+
+  $schema[ESN_COUNTRY_TABLE] = array(
+    'description' => 'A list of all ESN Countries.',
+    'fields' => array(
+      'country_id' => array(
+        'description' => 'Drupal entity ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'code' => array(
+        'description' => 'Country Code',
+        'type' => 'varchar',
+        'length' => 2,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'country_name' => array(
+        'description' => 'Country Name',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'ESN Country Name',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'last_updated' => array(
+        'description' => 'Timestamp when the data has last been updated from Galaxy',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'website' => array(
+        'description' => 'Website of the ESN Country',
+        'type' => 'varchar',
+        'length' => 150,
+        'not null' => FALSE,
+        'default' => NULL,
+      ),
+      'website_logo' => array(
+        'description' => 'website logo url',
+        'type' => 'varchar',
+        'length' => 150,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'indexes' => array(
+      'country_names' => array('country_name'),
+      'esn_country_names' => array('name'),
+    ),
+    'unique keys' => array(
+      'country_code' => array('code'),
+    ),
+    'primary key' => array('country_id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_requirements
+ * @param $phase
+ *           The phase in which requirements are checked
+ */
+function esn_galaxy_api_requirements($phase) {
+  $requirements = [];
+  // Ensure translations don't break during installation.
+  $t = get_t();
+  $phpversion = phpversion();
+
+  // Test PHP version
+  $php = array(
+    'title' => $t('ESN Galaxy API (PHP)'),
+    'value' => ($phase == 'runtime') ? l($phpversion, 'admin/reports/status/php') : $phpversion,
+  );
+  if (version_compare($phpversion, GALAXY_API_MINIMUM_PHP) < 0) {
+    $php['description'] = $t('Your PHP installation is too old. ESN Galaxy API requires at least PHP %version.', array('%version' => GALAXY_API_MINIMUM_PHP));
+    $php['severity'] = REQUIREMENT_ERROR;
+  }
+  $mysql = FALSE; // Only used in install
+
+  if ($phase != 'install') {
+    try {
+      $db = Database::getConnection();
+      switch (strtolower($db->databaseType())) {
+        // Test MySQL version
+        case 'mysql':
+          $version = explode('-', $db->version());
+          unset($version[1]);
+          $version_parts = explode('.', $version[0]);
+          $mysql = array(
+            'title' => $t('ESN Galaxy API (MySQL)'),
+          );
+          $major_ok = intval($version_parts[0]) >= 5;
+          $minor_ok = intval($version_parts[1]) >= ($phase == 'install' ? 4 : 3);
+          if ($major_ok) {
+            $mysql['value'] = $version[0];
+            if ($minor_ok) {
+              $mysql['severity'] = REQUIREMENT_OK;
+            }
+            else {
+              $mysql['severity'] = $phase == 'runtime' ? REQUIREMENT_INFO : REQUIREMENT_WARNING;
+              $mysql['description'] = $t('Your MySQL server is old. You should update to MySQL 5.5.3 or newer.');
+            }
+          }
+          else {
+            $mysql['severity'] = REQUIREMENT_ERROR;
+            $mysql['description'] = $t('Your MySQL server is too old. Please update to MySQL 5.4 or newer! Recommended version is 5.5.3 or newer.');
+          }
+          $requirements[] = $mysql;
+          break;
+      }
+    } catch (Exception $ex) {
+    }
+  }
+
+  $requirements = [
+    'esn_galaxy_php' => $php,
+    'esn_galaxy_mysql' => $mysql,
+  ];
+
+  return array_filter($requirements);
+}
+
+/**
+ * Update ESN countries table structure to make ESN Country an entity.
+ */
+function esn_galaxy_api_update_7001() {
+  if (db_table_exists('esn_countries')) {
+    // Delete data because we are shortening some fields. MySQL doesn't like this
+    // because it could cause loss of data even if we know it doesn't in our case.
+    // We will re-fill the table later.
+    db_truncate('esn_countries')->execute();
+
+    db_rename_table('esn_countries', ESN_COUNTRY_TABLE);
+    $schema = esn_galaxy_api_schema();
+    $schema = $schema[ESN_COUNTRY_TABLE]['fields'];
+
+    // Rename fields
+    db_change_field(ESN_COUNTRY_TABLE, 'cc', 'code', $schema['code']);
+    db_change_field(ESN_COUNTRY_TABLE, 'cn', 'country_name', $schema['country_name']);
+    db_change_field(ESN_COUNTRY_TABLE, 'esncn', 'name', $schema['name']);
+
+    // Drop the primary key as it will be created on the new field
+    db_drop_primary_key(ESN_COUNTRY_TABLE);
+
+    // Add field for country id, which becomes the new entity-supported primary key
+    db_add_field(ESN_COUNTRY_TABLE, 'country_id', $schema['country_id'],
+      array(
+        'primary key' => array('country_id'),
+        'unique keys' => array(
+          'code' => array('code'),
+        ),
+        'indexes' => array(
+          'country_names' => array('country_name'),
+          'esn_country_names' => array('name'),
+        ),
+      ));
+    // Add field for recording last update time of data
+    db_add_field(ESN_COUNTRY_TABLE, 'last_updated', $schema['last_updated']);
+  }
+}
+
+/**
+ * Add website field to ESN Country
+ */
+function esn_galaxy_api_update_7002() {
+  if (!db_field_exists(ESN_COUNTRY_TABLE, 'website')) {
+    $schema = esn_galaxy_api_schema();
+    $schema = $schema[ESN_COUNTRY_TABLE]['fields'];
+    db_add_field(ESN_COUNTRY_TABLE, 'website', $schema['website']);
+  }
+}
+
+/**
+ * Update ESN sections table structure to make ESN Section an entity.
+ */
+function esn_galaxy_api_update_7003() {
+  // Delete all data so that we can add the country references
+  if (db_table_exists('esn_sections')) {
+    // Delete data because we are shortening some fields. MySQL doesn't like this
+    // because it could cause loss of data even if we know it doesn't in our case.
+    // We will re-fill the table later.
+    db_truncate('esn_sections')->execute();
+
+    db_rename_table('esn_sections', ESN_SECTION_TABLE);
+    $schema = esn_galaxy_api_schema();
+    $schema = $schema[ESN_SECTION_TABLE]['fields'];
+
+    // Rename fields
+    db_change_field(ESN_SECTION_TABLE, 'sc', 'code', $schema['code']);
+    db_change_field(ESN_SECTION_TABLE, 'country', 'country_code', $schema['country_code']);
+    db_change_field(ESN_SECTION_TABLE, 'sectionname', 'name', $schema['name']);
+    db_change_field(ESN_SECTION_TABLE, 'longitude', 'longitude', $schema['longitude']);
+    db_change_field(ESN_SECTION_TABLE, 'latitude', 'latitude', $schema['latitude']);
+    if (db_field_exists(ESN_SECTION_TABLE, 'website')) {
+      db_change_field(ESN_SECTION_TABLE, 'website', 'website', $schema['website']);
+    }
+
+    // Drop the primary key as it will be created on the new field
+    db_drop_primary_key(ESN_SECTION_TABLE);
+
+    // Add field for country id, which becomes the new entity-supported primary key
+    db_add_field(ESN_SECTION_TABLE, 'section_id', $schema['section_id'],
+      array(
+        'primary key' => array('section_id'),
+        'unique keys' => array(
+          'code' => array('code'),
+        ),
+        'indexes' => array(
+          'countries' => array('country_code'),
+          'esn_section_names' => array('name'),
+          'esn_sections_in_country' => array('country_code', 'name'),
+        ),
+      ));
+
+    // Add field for country id, which references the ESN Country entity
+    db_add_field(ESN_SECTION_TABLE, 'country_id', $schema['country_id'], array(
+      'foreign keys' => array(
+        'section_country' => array(
+          'table' => ESN_COUNTRY_TABLE,
+          'columns' => array('country_id' => 'country_id'),
+        ),
+      )
+    ));
+
+    // Add field for recording last update time of data
+    db_add_field(ESN_SECTION_TABLE, 'last_updated', $schema['last_updated']);
+  }
+}
+
+/**
+ * Delete obsolete variable esn_galaxy_api_cc
+ */
+function esn_galaxy_api_update_7004() {
+  // Delete variables.
+  variable_del('esn_galaxy_api_cc');
+}
+
+/**
+ * Add website logo field to ESN Country and ESN Section
+ */
+function esn_galaxy_api_update_7005() {
+  $schema = esn_galaxy_api_schema();
+  $field_name = 'website_logo';
+  $table = $schema[ESN_COUNTRY_TABLE];
+  if (!db_field_exists(ESN_COUNTRY_TABLE, $field_name)) {
+    $field = $table['fields'][$field_name];
+    db_add_field(ESN_COUNTRY_TABLE, $field_name, $field);
+  }
+  $table = $schema[ESN_SECTION_TABLE];
+  if (!db_field_exists(ESN_SECTION_TABLE, $field_name)) {
+    $field = $table['fields'][$field_name];
+    db_add_field(ESN_SECTION_TABLE, $field_name, $field);
+  }
+}
+
+/**
+ * Update ESN countries and sections from Galaxy after conversion to entities
+ */
+function esn_galaxy_api_update_7200() {
+  // repopulation of tables
+  require_once 'esn_galaxy_api.module';
+  module_load_include('inc', 'esn_galaxy_api', 'esn_galaxy_api.load');
+  _esn_galaxy_api_save_countries();
+  _esn_galaxy_api_save_sections();
+
+  drupal_set_message("The section list has been updated.");
+}
+
+/**
+ * Set updating by cron to true.
+ */
+function esn_galaxy_api_update_7201() {
+  variable_set('esn_galaxy_api_cron', 1);
+}
+
+/**
+ * If updating from 4.5.1 we need to fix the data tables...
+ */
+function esn_galaxy_api_update_7202() {
+  if (variable_get('esn_galaxy_api_cron', NULL) !== NULL) {
+    // everything ok, nothing to do
+    return;
+  }
+
+  // Country table
+  $schema = esn_galaxy_api_schema();
+  $table = $schema[ESN_COUNTRY_TABLE]['fields'];
+  db_change_field(ESN_COUNTRY_TABLE, 'code', 'code', $table['code']);
+  db_change_field(ESN_COUNTRY_TABLE, 'country_name', 'country_name', $table['country_name']);
+  db_change_field(ESN_COUNTRY_TABLE, 'name', 'name', $table['name']);
+  db_change_field(ESN_COUNTRY_TABLE, 'website', 'website', $table['website']);
+  db_change_field(ESN_COUNTRY_TABLE, 'website_logo', 'website_logo', $table['website_logo']);
+
+  // Section table
+  $table = $schema[ESN_SECTION_TABLE]['fields'];
+  db_change_field(ESN_SECTION_TABLE, 'code', 'code', $table['code']);
+  db_change_field(ESN_SECTION_TABLE, 'country_code', 'country_code', $table['country_code']);
+  db_change_field(ESN_SECTION_TABLE, 'name', 'name', $table['name']);
+  db_change_field(ESN_SECTION_TABLE, 'longitude', 'longitude', $table['longitude']);
+  db_change_field(ESN_SECTION_TABLE, 'latitude', 'latitude', $table['latitude']);
+  db_change_field(ESN_SECTION_TABLE, 'website', 'website', $table['website']);
+  db_change_field(ESN_SECTION_TABLE, 'website_logo', 'website_logo', $table['website_logo']);
+
+  // Set geo coordinates to NULL because conversion leads to 0.0 / 0.0
+  db_query('UPDATE {esn_section} SET longitude = NULL, latitude = NULL WHERE longitude = 0 AND latitude = 0')->execute();
+
+  // Set updating by cron to true.
+  variable_set('esn_galaxy_api_cron', 1);
+}

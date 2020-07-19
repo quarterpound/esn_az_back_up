@@ -1,0 +1,1 @@
+Configure a wysiwyg editor to be used in ESN projects.

@@ -1,0 +1,296 @@
+<?php
+
+define('SATELLITE_CALLHOME_DEFAULT_GATEWAY', 'http://satellite.esn.org/');
+define('SATELLITE_CALLHOME_RELEASE_URL', 'http://satellite.esn.org/release-history/1');
+
+require_once 'satellite_callhome.client.inc';
+
+/**
+ * get php information to call home with
+ */
+function _satellite_callhome_get_php_info() {
+
+  $ret = array();
+
+  $extensions = get_loaded_extensions();
+
+  sort($extensions);
+
+  foreach ($extensions as $ext) {
+    $version = phpversion($ext);
+    if ($ext == 'curl' && !$version) {
+      $version = curl_version();
+      $version = $version['version'];
+    }
+    $ret['extensions'][$ext] = $version ? $version : 'unknown';
+  }
+
+  $ret['uname'] = php_uname();
+  $ret['version'] = phpversion();
+
+  return $ret;
+}
+
+/**
+ * get all module versions
+ */
+function _satellite_callhome_get_module_versions( $modules = null ) {
+
+  // Get all modules
+  if ( is_null($modules) ) {
+    $modules = module_list();
+  }
+
+  $modules_info = array();
+
+  foreach ($modules as $module) {
+    $path = drupal_get_path('module', $module) . '/' . $module . '.info';
+    $info = drupal_parse_info_file($path);
+
+    if ( !isset($info['version']) ) {
+      $info['version'] = 'unknown';
+    }
+    $modules_info[$module] = $info['version'];
+  }
+  return $modules_info;
+}
+
+function satellite_callhome_url() {
+  $url = variable_get('satellite_callhome_gateway', null);
+  if (!isset($url)){
+    $url = SATELLITE_CALLHOME_DEFAULT_GATEWAY;
+    variable_set('satellite_callhome_gateway', $url);
+  }
+  return $url;
+}
+
+/**
+ * get the version of the satellite
+ */
+function satellite_callhome_version() {
+  $path = drupal_get_path('module', 'satellite_base') . '/satellite_base.info';
+  $info = drupal_parse_info_file($path);
+
+  if ( !isset($info['version']) ) {
+    $info['version'] = 'unknown';
+  }
+
+  //if ( preg_match( '/^\d+\.\d+(\.\d+)?(-(alpha|beta|rc)\d+)?$/', $info['version']) )     {
+    // allow 4.0; 4.0-alpha3; 4.0.1 etc...
+    $version = $info['version'];
+  // }
+
+  return $version;
+} 
+
+/**
+ * Implements hook_cron.
+ */
+function satellite_callhome_cron() {
+
+  $last_call = variable_get('satellite_callhome_lastcall', 0);
+  $now = time();
+
+  if ( ($now - $last_call) > 24 * 3600  ) {
+    if (variable_get('satellite_callhome_optin', TRUE)) {
+      satellite_callhome_call();
+    }
+    if (variable_get('satellite_callhome_update', FALSE)) {
+      satellite_callhome_set_message();
+    }
+    // set the update variable to true if its not set on the second cron run
+    if (variable_get('satellite_callhome_update', NULL) === NULL && $last_call != 0) {
+      variable_get('satellite_callhome_update', TRUE);
+    }
+  }
+  
+}
+
+/**
+ * Implements hook_menu.
+ */
+function satellite_callhome_menu() {
+
+  $items['admin/settings/satellite/callhome'] = array(
+    'title' => t('Satellite Callhome'),
+    'description' => t('Configure the callhome feature.'),
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('satellite_callhome_optin_form'),
+    'access arguments' => array('administer satellite settings'),
+    'weight' => 0,
+  );
+
+  $items['admin/settings/satellite/callhome/config'] = array(
+    'title' => t('Satellite Callhome'),
+    'description' => t('Configure the callhome feature.'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+  );
+
+  $items['admin/settings/satellite/callhome/privacy'] = array(
+    'title' => t('Privacy Information'),
+    'description' => t('Show detailed privacy information about the callhome feature.'),
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'satellite_callhome_privacy_page',
+    'access arguments' => array('administer satellite settings'),
+    'weight' => 10,
+  );
+  return $items;
+}
+
+function satellite_callhome_theme($existing, $type, $theme, $path) {
+  $themes = array(
+    'callhome_privacy' => array(
+      'variables' => array(),
+      'template' => 'theme/callhome-privacy'
+    ),
+  );
+  return $themes;
+}
+
+function satellite_callhome_privacy_page() {
+  return theme('callhome_privacy');
+}
+
+/**
+ * Configuration form callback
+ */
+function satellite_callhome_optin_form($form, &$form_state){
+
+  $form['callhome'] = array(
+  '#type' => 'fieldset',
+  );
+
+  $info_message = "<div class='callhome-info description'><p>Satellite sends some basic information to the <em>ESN IT Committee</em> by default";
+  $info_message .= " which cannot be turned off because some features of your satellite depend on this.<br />To find out which information will be send see our <a href='!privacy'>Privacy Information</a>.</p>";
+  $form['callhome']['info'] = array(
+    '#markup' => t($info_message, array(
+      '!privacy' => url('admin/settings/satellite/callhome/privacy'),
+      )
+    ),
+  );
+
+  $form['callhome']['extended_info'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Send <strong>extended</strong> Satellite information to ESN IT Committee',
+    '#default_value' => variable_get('satellite_callhome_extdata', TRUE),
+  );
+
+  $form['callhome']['update'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Get an update notification',
+    '#description' => t('If this box is checked, this Satellite will check for updates and inform the administrator.'),
+    '#default_value' => variable_get('satellite_callhome_update', TRUE)
+  );
+
+
+  $form['callhome']['actions'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('form-actions'),
+    ),
+  );
+
+  $form['callhome']['actions']['header'] = array(
+    '#markup' => t('<br /><h4>Callhome actions</h4>'),
+  );
+
+  $form['callhome']['actions']['callby_user'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send Satellite information to ESN IT Committee manually'),
+    '#name' => 'callby_user',
+    '#submit' => array('satellite_callhome_call'),
+  );
+
+
+  $form['callhome']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  
+  return $form;
+
+}
+
+/**
+ * submit callback
+ */
+function satellite_callhome_optin_form_submit($form, &$form_state) {
+  variable_set('satellite_callhome_extdata', $form_state['values']['extended_info']);
+  variable_set('satellite_callhome_update', $form_state['values']['update']);
+
+}
+
+/**
+ * Sets the naging message if the latest release version is not the same
+ */
+function satellite_callhome_set_message() {
+  $release = satellite_callhome_get_updates();
+  // the releases are sorted with the newest first
+  $release = reset($release);
+  
+  if (!$release) {
+    // If the release could not be fetched, don't display the message
+    variable_set('satellite_callhome_message', FALSE);
+  }
+  
+  $version = satellite_callhome_version();
+  if ($version != 'unknown' && $version != '7.x-' . $release['version']) {
+    variable_set('satellite_callhome_message', 
+      t('There is a new update (@version) for your ESN Satellite! <a href="@link" target="_blank">Download it now</a>',
+      array('@version' => $release['version'], '@link' => $release['link']))
+    );
+  }
+  else {
+    variable_set('satellite_callhome_message', FALSE);
+  }
+}
+
+/**
+ * Implements hook_init.
+ */
+function satellite_callhome_init() {
+  if (user_access('administer site configuration')) { // && arg(0) == 'admin'
+    $message = variable_get('satellite_callhome_message', FALSE);
+    if ($message) {
+      drupal_set_message($message, 'warning', FALSE);
+    }
+  }
+}
+
+/**
+ * Implements hook_flush_chaches.
+ */
+function satellite_callhome_flush_caches() {
+  // set the update notifications so that the message disappears after an update
+  if (variable_get('satellite_callhome_update', FALSE)) {
+    satellite_callhome_set_message();
+  }
+  // no cache tables to be cleared
+  return array();
+}
+
+
+/**
+ * fetch the satellite release history
+ */
+function satellite_callhome_get_updates() {
+
+  $xml = @simplexml_load_file(SATELLITE_CALLHOME_RELEASE_URL);
+  if (!$xml) {
+    watchdog('satellite_callhome', 'The Satellite release history could not be reached.', array(),  WATCHDOG_ERROR);
+    return array();
+  }
+  
+  foreach ($xml->channel->item as $release) {
+    // var_dump((string) $release->description);
+    $data[((string) $release->description)] = array(
+      'version' => ((string) $release->description),
+      'release date' => ((string) $release->pubDate),
+      'link' => ((string) $release->link), 
+    );
+  }
+  return $data;
+}
+

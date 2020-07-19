@@ -1,0 +1,238 @@
+/* --------------------------------------------------------------
+EXAMPLE.css
+Lorem ipsum dolor
+-------------------------------------------------------------- */
+
+
+
+
+/* 
+-------------------------------------------------------------- */
+
+.esn-blocks .block {
+
+	padding: 20px;
+	margin: 0;
+	border-top: 1px dashed #eee;
+
+	@include breakpoint(tablet-portrait) {
+		border: none;
+	}
+
+	.block-header {
+
+		margin-bottom: 20px;
+		position: relative;
+
+		div.block-title {
+
+			h2 {
+				$radius: 3px;
+				display: inline-block;
+				margin: 0;
+				padding: 9px 16px 9px 40px;
+				background: $esn-blue;
+				font-family: $font-block-header;
+				font-weight: bold;
+				color: #fff;
+				line-height: 16px;
+				font-size: 14px;
+				text-transform: uppercase;
+				border-radius: $radius $radius $radius 0;
+			}
+
+		}
+
+		&:after {
+			$triangle: 6px;
+			position: absolute;
+			bottom: -$triangle;
+			content: "";
+			width: 0px;
+			height: 0px;
+			border-style: solid;
+			border-width: $triangle 12px 0 0;
+			border-color: $esn-blue transparent transparent transparent;
+		}
+	}
+
+	.block-content {
+
+		color: #999;
+		font-size: 14px;
+		line-height: 22px;
+		font-family: $font-block-content;
+
+		p {
+			margin: 10px 0 0 0;
+		}
+
+		p:first-child {
+			margin: 0;
+		}
+		
+		div.group-image a {
+		  display: block;
+		}
+		
+	}
+
+	// Icons
+
+	$sprite-size: 26;
+
+	.esn-block-theme-icon {
+		display: inline-block;
+		width: $sprite-size * 1px;
+		height: $sprite-size * 1px;
+		vertical-align: top;
+		position: absolute;
+		top: 4px;
+		left: 7px;
+		background-image: url(../img/icons_white.png);
+		background-size: ($sprite-size * 10px) ($sprite-size * 10px);
+		background-position: 0 0;
+	}
+
+	$sprite: (
+		1  1  none,
+		1  2  esnstar,
+		1  3  home,
+		1  4  location,
+		1  5  picture,
+		1  6  photo,
+		1  7  video,
+		1  8  clock,
+		1  9  calendar,
+		1  10 user,
+		2  1  book,
+		2  2  tag,
+		2  3  ok,
+		2  4  flag,
+		2  5  paperplane,
+		2  6  briefcase,
+		2  7  trophy,
+		2  8  videogame,
+		2  9  lightbulb,
+		2  10 sunglasses,
+		3  1  coffee,
+		3  2  glass,
+		3  3  beer,
+		3  4  smiley,
+		3  5  speechbubble,
+		3  6  speechbubbles,
+		3  7  email,
+		3  8  document,
+		3  9  clip,
+		3  10 download,
+		4  1  cloud,
+		4  2  heart,
+		4  3  pencil,
+		4  4  bookmark,
+		4  5  music,
+		4  6  volume,
+		4  7  stats,
+		4  8  plane,
+		4  9  direction,
+		4  10 luggage,
+		5  1  social-share,
+		5  2  social-rss,
+		5  3  social-facebook,
+		5  4  social-twitter,
+		5  5  social-youtube,
+		5  6  quote,
+		5  7  warning,
+		5  8  info,
+		5  9  planet,
+		5  10 star,
+		6  1  megaphone,
+		6  2  microphone,
+		6  3  search,
+		6  4  lock,
+		6  5  help,
+		6  6  tools,
+		6  7  cog,
+		6  8  thumbs-up,
+		6  9  thumbs-down,
+		6  10 world
+		);
+
+	@each $spr in $sprite {
+		$row  : nth($spr, 1);
+		$col  : nth($spr, 2);
+		$icon : nth($spr, 3);
+		$sprite-coord : $sprite-size * -1px;
+
+		.esn-block-theme-icon-#{$icon} { background-position: ($col - 1) * $sprite-coord ($row - 1) * $sprite-coord ;}
+	}
+
+	@media
+	only screen and (-webkit-min-device-pixel-ratio: 2),
+	only screen and (   min--moz-device-pixel-ratio: 2),
+	only screen and (     -o-min-device-pixel-ratio: 2/1),
+	only screen and (        min-device-pixel-ratio: 2),
+	only screen and (                min-resolution: 192dpi),
+	only screen and (                min-resolution: 2dppx) { 
+		.esn-block-theme-icon {
+			//background-image: url(../img/icons.png);
+		}
+	}
+	
+	// Colors
+
+	&.esn-blockcolor-blue {
+		div.block-header h2 { background: $esn-blue; }
+		div.block-header:after { border-top-color: $esn-blue; }
+		.block-content a { color: $esn-blue; }
+	}
+
+	&.esn-blockcolor-purple {
+		div.block-header h2 { background: $esn-pink; }
+		div.block-header:after { border-top-color: $esn-pink; }
+		.block-content a { color: $esn-pink; }
+	}
+
+	&.esn-blockcolor-orange {
+		div.block-header h2 { background: $esn-orange; }
+		div.block-header:after { border-top-color: $esn-orange; }
+		.block-content a { color: $esn-orange; }
+	}
+
+	&.esn-blockcolor-green {
+		div.block-header h2 { background: $esn-green; }
+		div.block-header:after { border-top-color: $esn-green; }
+		.block-content a { color: $esn-green; }
+	}
+
+	&.esn-blockcolor-dark-blue {
+		div.block-header h2 { background: $esn-dark-blue; }
+		div.block-header:after { border-top-color: $esn-dark-blue; }
+		.block-content a { color: $esn-dark-blue; }
+	}
+}
+
+/* 
+-------------------------------------------------------------- */
+
+#footer .esn-blocks .block {
+	border-color: #333;
+	div.block-header h2 { background: #444; }
+	div.block-header:after { border-top-color: #444; }
+	.block-content { 
+		color: #888;
+		font-size: 13px;
+		line-height: 18px;
+	}
+	.block-content a { color: $esn-orange; }
+}
+
+#footer-bottom .block {
+	.block-header {
+		display: none;
+	}
+}
+
+/* 
+-------------------------------------------------------------- */
+
+

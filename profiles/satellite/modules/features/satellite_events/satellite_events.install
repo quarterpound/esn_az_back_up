@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * Implements hook_install()
+ */
+function satellite_events_install() {
+  // set the calendar legend up.
+  variable_set('calendar_legend_view_calendar_legend', 'events_calendar:month');
+  esn_blocktheme_set_icon('calendar', 'calendar_legend', 'calendar');
+}
+
+/** Setup update dependencies */
+function satellite_events_update_dependencies() {
+  $dependencies['satellite_events'][7002] = array(
+    'satellite_base' => 7001,
+  );
+  return $dependencies;
+}
+
+/**
+ * Configure the calendar legend and enable the calendar module
+ */
+function satellite_events_update_7001() {
+  module_enable(array('calendar'));
+  variable_set('calendar_legend_view_calendar_legend', 'events_calendar:month');
+  esn_blocktheme_set_icon('calendar', 'calendar_legend', 'calendar');
+  
+  // Create a Calendar link in the main menu.
+  $item = array(
+    'link_title' => 'Calendar',
+    'link_path' => 'calendar',
+    'menu_name' => 'main-menu',
+    'weight' => 0,
+  );
+  menu_link_save($item);
+  menu_rebuild();
+}
+
+
+/**
+ *  Revert feature: Enable service links, metatag integration and location fields
+ */
+function satellite_events_update_7002() {
+  module_enable(array('addressfield', 'geophp', 'geocoder', 'geofield'), true);
+  esn_base_features_revert(array(
+    'satellite_events'
+  ));
+}
+
+/**
+ * Enable Satelite Facebook Events Feeds Parser
+ */
+function satellite_events_update_7003() {
+  if (module_exists('feeds_facebook')) {
+    module_enable(['satellite_events_facebook'], TRUE);
+  }
+}

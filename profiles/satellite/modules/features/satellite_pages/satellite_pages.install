@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * Implementing hook_enable()
+ */
+function satellite_pages_enable() {
+  db_update('system')
+    ->fields(array('weight' => 10))
+    ->condition('name', 'satellite_pages')
+    ->condition('type', 'module')
+    ->execute();
+}
+
+/** Setup update dependencies */
+function satellite_pages_update_dependencies() {
+  $dependencies['satellite_pages'][7001] = array(
+    'satellite_base' => 7001,
+  );
+  return $dependencies;
+}
+
+/**
+ *  Revert feature: Enable service links and metatag integration
+ */
+function satellite_pages_update_7001() {
+  esn_base_features_revert(array(
+    'satellite_pages'
+  ));
+}

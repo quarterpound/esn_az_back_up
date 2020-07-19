@@ -1,0 +1,23 @@
+# Webform ESNcardt makefile
+
+api:  2
+core: 7.x
+
+# Specify common subdir of "contrib"
+defaults:
+  projects:
+    subdir: "contrib"
+
+projects:
+  # ESNcard API
+  esn_esncard_api:
+    type: module
+    subdir: custom
+    download:
+      type: git
+      url: "git@git.esn.org:common/esn_esncard_api.git"
+      branch:       7.x-1.x
+      full_version: 7.x-1.x-dev
+
+  webform:
+    version: '4.19'

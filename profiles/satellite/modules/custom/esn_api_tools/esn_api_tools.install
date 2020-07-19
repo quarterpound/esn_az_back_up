@@ -1,0 +1,29 @@
+<?php
+
+function _esn_api_configure_cors() {
+  $cors = array(
+    'api/*' => '*',
+    'sites/*' => '*',
+  );
+  drupal_alter('esn_cors', $cors);
+  variable_set('cors_domains', $cors);
+}
+
+function esn_api_tools_install() {
+  _esn_api_configure_cors();
+  esn_api_tools_update_7002(); // Create site UUID
+}
+
+/**
+ * Configure CORS for API
+ */
+function esn_api_tools_update_7001() {
+  _esn_api_configure_cors();
+}
+
+/**
+ * Create ESN site instance UUID
+ */
+function esn_api_tools_update_7002() {
+  variable_set('esn_site_uuid', uuid_generate());
+}

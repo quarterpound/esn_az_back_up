@@ -1,0 +1,176 @@
+
+/* CONFIG
+-------------------------------------------------------------- */
+
+$image-border: inset 0 0 1px rgba(0,0,0,0.3);
+$image-radius: 5px;
+
+
+/* BLOCK
+-------------------------------------------------------------- */
+
+.view-mode-block {
+
+	margin-bottom: 10px;
+	
+	.group-image {
+		float: left;
+		text-align: center;
+
+		.field-type-image {
+			box-shadow: $image-border;
+			border-radius: $image-radius;
+		}
+
+		img {
+			margin: 0 auto;
+			z-index: -1;
+			position: relative;
+			border-radius: $image-radius;
+			
+		}
+	}
+
+	.group-content {
+		margin-left: 75px;
+		padding-top: 10px;
+		font-size: 12px;
+
+		.field {
+			margin: 0;
+		}
+
+		h2 {
+			margin: 0;
+			line-height: normal;
+			font-weight: 400;
+		}
+
+		a {
+			text-decoration: none;
+			color: $esn-blue;
+		}
+	}
+}
+
+
+
+
+
+/* LIST
+-------------------------------------------------------------- */
+
+.view-mode-list {
+
+	margin-bottom: 20px;
+	
+	.group-image {
+		float: left;
+		text-align: center;
+
+		.field-type-image {
+			box-shadow: $image-border;
+			border-radius: $image-radius;
+		}
+
+		img {
+			margin: 0 auto;
+			z-index: -1;
+			display: block;
+			border-radius: $image-radius;
+		}
+	}
+
+	.group-content {
+		margin-left: 140px;
+		padding-top: 0px;
+		font-size: 12px;
+
+		.field {
+			margin: 0;
+		}
+
+		h2 {
+			margin: 0;
+			line-height: normal;
+			font-weight: 400;
+			font-size: 24px;
+		}
+
+		a {
+			text-decoration: none;
+			color: $esn-blue;
+		}
+	}
+
+	@include breakpoint(mobile-portrait) {
+		.group-image {
+			float:none;
+
+			.field-type-image {
+				width: 120px;
+			}
+		}
+
+		.group-content {
+			margin-left: 0px;
+			padding-top: 10px;
+		}
+	}
+}
+
+
+/* PAGE
+-------------------------------------------------------------- */
+
+.view-mode-page {
+	
+	
+}
+
+
+/* FULL
+-------------------------------------------------------------- */
+
+.view-mode-full {
+
+	
+
+	.group-image {
+		display: none;
+	}
+
+	.group-content {
+
+	}
+
+	.group-secondary {
+
+	}
+
+	@include breakpoint(tablet-portrait) {
+
+		.group-image {
+			display: block;
+			float: right;
+			margin: 0 0 20px 20px;
+
+			.field-type-image {
+				box-shadow: $image-border;
+				border-radius: $image-radius;
+			}
+
+			img {
+
+				z-index: -1;
+				position: relative;
+				border-radius: $image-radius;
+			}
+		}
+
+		.group-content {
+
+		}
+	}
+
+}

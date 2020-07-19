@@ -1,0 +1,58 @@
+<?php
+/**
+ * @file
+ * Drupal needs this blank file.
+ */
+require_once 'versions/esn_mobile_api.v1.inc';
+
+function esn_mobile_api_is_mobile_api_source() {
+  return variable_get('esn_mobile_api_is_source', false);
+}
+
+function esn_mobile_api_version() {
+  return '1';
+}
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function esn_mobile_api_ctools_plugin_api($owner, $api) {
+  if ($owner == 'services' && $api == 'services') {
+    return array(
+      'version' => 3,
+      'file' => 'esn_mobile_api.services.inc'
+    );
+  }
+}
+
+/**
+ * Implements hook_field_attach_view_alter().
+ */
+function esn_mobile_api_field_attach_view_alter(&$output, $context) {
+  if (!isset($context['display']['module'])) {
+      return;
+  }
+  $module = $context['display']['module'];
+  if ($module == "date"){
+    foreach ($output as $name => $data){
+      for ($i = 0; $i < count($data['#items']); $i++) {
+        $data[$i]['#markup'] = strip_tags($data[$i]['#markup']);
+      }
+      $output[$name] = $data;
+    }
+  }
+}
+
+function _esn_mobile_api_create_new_token() {
+  $uuid = uuid_generate();
+  variable_set('esn_mobile_api_token', $uuid);
+  return $uuid;
+}
+
+function esn_mobile_api_token() {
+  $uuid = variable_get('esn_mobile_api_token', null);
+  if (!isset($uuid)) {
+    return _esn_mobile_api_create_new_token();
+  }
+  return $uuid;
+}

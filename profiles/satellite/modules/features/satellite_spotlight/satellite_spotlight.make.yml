@@ -1,0 +1,36 @@
+api: 2
+core: 7.x
+
+
+# Specify common subdir of "contrib"
+defaults:
+  projects:
+    subdir: "contrib"
+
+projects:
+  flexslider:
+    version: '2.0-rc2'
+  views_slideshow:
+    version: '3.9'
+  flexslider_views_slideshow:
+    version: ~ # latest version
+
+libraries:
+  flexslider:
+    download:
+      type: get
+      url: https://github.com/woothemes/FlexSlider/archive/master.zip
+    destination: libraries
+    directory_name: flexslider
+  jquery_cycle_library:
+    download:
+      type: get
+      url:  http://malsup.github.com/jquery.cycle.all.js
+    destination: libraries
+    directory_name: jquery.cycle
+  json2:
+    download:
+      type: get
+      url:  https://github.com/douglascrockford/JSON-js/archive/master.zip
+    destination: libraries
+    directory_name: json2

@@ -1,0 +1,28 @@
+<?php
+
+function satellite_callhome_install() {
+  variable_set('satellite_callhome', True);
+  variable_set('satellite_callhome_lastcall', 0);
+  variable_set('satellite_callhome_gateway', 'http://satellite.esn.org/');
+}
+
+function satellite_callhome_uninstall() {
+  variable_del('satellite_callhome');
+  variable_del('satellite_callhome_lastcall');
+}
+
+/**
+* remove obsolete variable.
+*/
+function satellite_callhome_update_7000() {
+  variable_del('satellite_callhome_url');
+  variable_del('satellite_callhome_optin');
+  variable_set('satellite_callhome_gateway', 'http://ares.esn.org/~mvonfrie/iss/');
+}
+
+/**
+* Change Callhome gateway from staging to live server
+*/
+function satellite_callhome_update_7001() {
+  variable_set('satellite_callhome_gateway', 'http://satellite.esn.org/');
+}

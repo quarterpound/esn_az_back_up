@@ -1,0 +1,71 @@
+<?php
+
+
+/**
+ * returns the status of an ESNcard number.
+ */
+function esn_esncard_api_card_status($cardnumber) {
+
+  $status = esn_esncard_api_fetch_card($cardnumber);
+
+  if (!$status) {
+    return NULL;
+  }
+  else {
+    return $status->status;
+  }  
+}
+
+/**
+ * returns TRUE if the card is active.
+ */
+function esn_esncard_api_active_card($cardnumber) {
+  return (esn_esncard_api_card_status($cardnumber) == 'active');
+}
+
+/**
+ * returns TRUE if the card is active or available.
+ */
+function esn_esncard_api_valid_card($cardnumber) {
+  $status = esn_esncard_api_card_status($cardnumber);
+  return ($status == 'active' || $status == 'available');
+}
+
+
+// TODO: expiration dates..
+
+
+
+// ------------------- functions below are for internal use mainly.
+// ------------------- we can add other useful services above.
+
+/**
+ * returns the ESNcard object fetched from the webservice
+ */
+function esn_esncard_api_fetch_card($cardnumber) {
+
+  $esncard_service = 'http://esncard.org/services/1.0/card.json?code=%s';
+  if (!esn_esncard_api_is_card_number($cardnumber)) {
+    return NULL;
+  }
+  // bam! do this!
+  $response = drupal_http_request(sprintf($esncard_service, $cardnumber));
+  if (isset($response->code) && $response->code == 200 && isset($response->data)) {
+    $data = json_decode($response->data);
+    return current($data);
+  }
+  return FALSE;
+
+}
+
+
+/**
+ * validates an ESNcard number pattern
+ */
+function esn_esncard_api_is_card_number($cardnumber) {
+
+  // TODO: match the card number with a regex pattern.
+  return TRUE;
+}
+
+

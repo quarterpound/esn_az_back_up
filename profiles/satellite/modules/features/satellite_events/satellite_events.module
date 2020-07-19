@@ -1,0 +1,93 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Events feature.
+ */
+
+include_once 'satellite_events.features.inc';
+
+/**
+ * Implements hook_views_default_views_alter().
+ */
+function satellite_events_views_default_views_alter(&$views) {
+  if (isset($views['events_calendar'])) {
+    $vocabulary = taxonomy_vocabulary_machine_name_load('event_type');
+    $terms = taxonomy_get_tree($vocabulary->vid, 0, NULL, TRUE);
+    $colors = array();
+    foreach ($terms as $term) {
+      $colors[$term->tid] = $term->field_calendar_color[LANGUAGE_NONE][0]['value'];
+    }
+
+    $handler_month =& $views['events_calendar']->display['month']->handler;
+    $handler_month->display->display_options['row_options']['colors']['calendar_colors_taxonomy'] = $colors;
+    
+    $handler_week =& $views['events_calendar']->display['week']->handler;
+    $handler_week->display->display_options['row_options']['colors']['calendar_colors_taxonomy'] = $colors;
+    
+    // fix issue https://drupal.org/node/1397986
+    $handler_week->display->display_options['style_options']['groupby_times'] = 'hour';
+    
+    $handler_day =& $views['events_calendar']->display['day']->handler;
+    // fix issue https://drupal.org/node/1397986
+    $handler_day->display->display_options['style_options']['groupby_times'] = 'hour';
+
+    // watch out for https://www.drupal.org/node/2160183
+
+  }
+}
+
+/**
+ * Implements hook_menu.
+ */
+function satellite_events_menu() {
+
+  $items['admin/settings/satellite/events'] = array(
+    'title' => t('Satellite Events'),
+    'description' => t('Configure the callhome feature.'),
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('satellite_events_settings'),
+    'access arguments' => array('administer satellite settings'),
+    'weight' => 0,
+  );
+  return $items;
+}
+
+/**
+ * Configuration form callback
+ */
+function satellite_events_settings($form, &$form_state) {
+  $form['events'] = array(
+    '#type' => 'container',
+  );
+  $info_message = "<div class='description'><p>Here you can configure some specific settinigs for the event content type. What can be configured depends on additional features enabled.</p></div>";
+  $form['events']['info'] = array(
+    '#markup' => t($info_message),
+  );
+
+
+  $form['callhome']['actions'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('form-actions'),
+    ),
+  );
+
+  $actions = array('save'=> FALSE);
+  drupal_alter('satellite_events_settings', $form, $form_state, $actions);
+
+  $form['callhome']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#disabled' => !$actions['save'],
+  );
+
+  return $form;
+}
+
+/**
+ * submit callback
+ */
+function satellite_events_settings_submit($form, &$form_state) {
+  module_invoke_all('satellite_events_settings_save', $form, $form_state);
+}

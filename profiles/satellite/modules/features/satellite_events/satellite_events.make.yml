@@ -1,0 +1,21 @@
+api: 2
+core: 7.x
+
+
+# Specify common subdir of "contrib"
+defaults:
+  projects:
+    subdir: "contrib"
+
+projects:
+  calendar:
+    version: '3.5'
+
+  satellite_events_registration:
+    type:   module
+    subdir: features
+    download:
+      type: git
+      url:  git@git.esn.org:satellite/4/events-registration.git
+      branch:       7.x-1.x
+      full_version: 7.x-1.x-dev

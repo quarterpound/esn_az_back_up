@@ -1,0 +1,25 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Marco
+ * Date: 14.12.2014
+ * Time: 17:52
+ */
+
+
+/** Setup update dependencies */
+function satellite_news_update_dependencies() {
+  $dependencies['satellite_news'][7001] = array(
+    'satellite_base' => 7001,
+  );
+  return $dependencies;
+}
+
+/**
+ *  Revert feature: Enable service links and metatag integration
+ */
+function satellite_news_update_7001() {
+  esn_base_features_revert(array(
+    'satellite_news'
+  ));
+}

@@ -1,0 +1,68 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Galaxy CAS Integration feature.
+ */
+
+include_once 'esn_cas.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function esn_cas_menu() {
+  $items = array();
+
+  $items['admin/config/people/cas/esn'] = array(
+    'title' => 'ESN',
+    'description' => 'Settings for Galaxy pictures.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('esn_cas_admin_settings'),
+    'access arguments' => array('administer cas'),
+    'file' => 'esn_cas.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -6,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_cas_user_presave().
+ */
+function esn_cas_cas_user_presave(&$edit, $account) {
+
+  if ($account->login && !variable_get('esn_cas_sync_every_login', NULL)) {
+    // The user has logged in before and we are not set to always synchronize.
+    return;
+  }
+  
+  // The field the picture should be attached to.
+  $picture_field = variable_get('esn_cas_picture_field', '');
+  if (!$picture_field) {
+    // There is no field set to be synchronized.
+    return;
+  }
+  
+  // picture url from Galaxy CAS attributes
+  $picture_uri = $edit['cas_user']['attributes']['picture'];
+  
+  if (!function_exists('remote_stream_wrapper_file_load_by_uri')) {
+    // the remote_stream_wrapper module needs to be enabled
+    return;
+  }
+  
+  $picture = remote_stream_wrapper_file_load_by_uri($picture_uri);
+  if(!$picture) {
+    $picture = remote_stream_wrapper_file_create_by_uri($picture_uri);
+    file_save($picture);
+  }
+  
+  if ($picture_field == 'picture') {
+    $edit['picture'] = $picture;
+  }
+  else {
+    $edit[$picture_field][LANGUAGE_NONE][0] = (array)$picture;
+  }
+
+}
+

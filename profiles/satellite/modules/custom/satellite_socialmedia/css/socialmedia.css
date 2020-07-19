@@ -1,0 +1,73 @@
+/* line 7, ../sass/socialmedia.scss */
+#socialmedia ul {
+  padding: 0;
+  margin: 0;
+}
+/* line 11, ../sass/socialmedia.scss */
+#socialmedia ul li {
+  display: inline-block;
+  white-space: nowrap;
+  list-style: none outside none;
+  margin: 0 2px 4px 0;
+}
+/* line 17, ../sass/socialmedia.scss */
+#socialmedia ul li:last-child {
+  margin-right: 0;
+}
+/* line 21, ../sass/socialmedia.scss */
+#socialmedia ul li a {
+  display: inline-block;
+  height: 36px;
+  width: 36px;
+  text-indent: -9999px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 32px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 100px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+/* line 33, ../sass/socialmedia.scss */
+#socialmedia ul li a:hover {
+  opacity: 1;
+}
+/* line 40, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-twitter a {
+  background-color: #29c5f6;
+  background-image: url(../img/socialmedia-twitter.png);
+}
+/* line 41, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-facebook a {
+  background-color: #3b5998;
+  background-image: url(../img/socialmedia-facebook.png);
+}
+/* line 42, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-youtube a {
+  background-color: #dd332c;
+  background-image: url(../img/socialmedia-youtube.png);
+}
+/* line 43, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-vimeo a {
+  background-color: #4da9cd;
+  background-image: url(../img/socialmedia-vimeo.png);
+}
+/* line 44, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-gplus a {
+  background-color: #d84a38;
+  background-image: url(../img/socialmedia-gplus.png);
+}
+/* line 45, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-flickr a {
+  background-color: #f0f0f0;
+  background-image: url(../img/socialmedia-flickr.png);
+}
+/* line 46, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-instagram a {
+  background-color: #135379;
+  background-image: url(../img/socialmedia-instagram.png);
+}
+/* line 47, ../sass/socialmedia.scss */
+#socialmedia .socialmedia-linkedin a {
+  background-color: #0077B5;
+  background-image: url(../img/socialmedia-linkedin.png);
+}

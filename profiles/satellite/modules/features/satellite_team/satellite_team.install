@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function satellite_team_install() {
+
+	//Delete the main profile type
+	db_delete('profile_type')
+		->condition('type', 'main')
+		->execute();
+}

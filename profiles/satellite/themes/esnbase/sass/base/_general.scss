@@ -1,0 +1,36 @@
+p {
+	margin: 0 0 15px 0;
+}
+
+a {
+	color: $esn-blue;
+	text-decoration: none;
+
+	&:hover {
+		color: $esn-pink;
+		text-decoration: underline;
+	}
+}
+
+/* TEMP
+-------------------------------------------------------------- */
+
+
+// Hide skip-link
+#skip-link {
+	display: none !important;
+}
+
+/* Fixes */
+
+// http://satellite.esn.org/issue/satellite-colorbox-buttons-border
+#cboxPrevious,
+#cboxNext,
+#cboxClose {
+	border:none!important;
+}
+
+// http://git.esn.org/common/esnbase/issues/3
+.node-unpublished {
+	background-color: rgba(246, 94, 94, .07);
+}

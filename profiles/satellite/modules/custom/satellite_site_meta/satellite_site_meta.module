@@ -1,0 +1,56 @@
+<?php
+
+function satellite_site_meta_menu() {
+  $items['site-logo'] = array(
+    'title' => 'Satellite logo url',
+    'page callback' => '_site_logo_callback',
+    'delivery callback' => '_site_logo_delivery',
+    'access callback' => '_site_logo_access',
+  );
+
+  return $items;
+}
+
+function _site_logo_access() {
+  return TRUE;
+}
+
+function _site_logo_callback() {
+  $theme = variable_get('theme_default', null);
+  if ($theme) {
+    $theme = variable_get("theme_{$theme}_settings", null);
+  }
+  if ($theme) {
+    $default_logo = $theme['default_logo'];
+    if ($default_logo) {
+      $theme = theme_get_setting('logo');
+    } else {
+      $theme = theme_get_setting('logo_path');
+    }
+    if ($theme) {
+      $theme = file_create_url($theme);
+      if ($theme) {
+        return $theme;
+      }
+    }
+  }
+  return null;
+}
+
+function _site_logo_delivery($page_callback_result) {
+  if ($page_callback_result == NULL) {
+    drupal_add_http_header('Status', '404 Not Found');
+    drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
+    // Standard 404 handler.
+    drupal_set_title(t('Page not found'));
+    $return = t('The requested page "@path" could not be found.', array('@path' => request_uri()));
+    print drupal_render_page($return);
+    return;
+  } else {
+    drupal_add_http_header('Status', '307 Temporary Redirect');
+    drupal_add_http_header('Location', $page_callback_result);
+  }
+  
+  // Perform end-of-request tasks.
+  drupal_page_footer();
+}

@@ -1,0 +1,19 @@
+name = ESN Events (Facebook Integration)
+description = Events integration with Facebook
+core = 7.x
+package = ESN Satellite
+version = 7.x-1.4
+project = satellite_events_facebook
+configure = admin/settings/satellite/events
+
+dependencies[] = ctools
+dependencies[] = date
+dependencies[] = esn_base
+dependencies[] = satellite_base
+dependencies[] = satellite_events
+dependencies[] = feeds
+
+; Information added by drush on 2018-03-28
+version = "7.x-1.5"
+project = "satellite_events"
+datestamp = "1522268356"

@@ -1,0 +1,57 @@
+/* 
+-------------------------------------------------------------- */
+
+table {
+
+	font-size: 0.9em;
+	line-height: normal;
+	width: 100%;
+
+	tr {
+
+	}
+
+	td, th {
+		
+	}
+
+	thead {
+
+		tr {
+			
+			border-bottom: 2px solid #e5e5e5;
+			background: #f2f2f2;
+
+			th {
+				padding: 6px 12px;
+				text-transform: uppercase;
+				font-size: 0.9em;
+				color: #666;
+				text-shadow: 0 1px 0 rgba(255,255,255,1);
+			}
+		}
+	}
+
+	tbody {
+
+		tr {
+
+			&.even, &.odd {
+				border-bottom: 1px solid #f5f5f5;
+			}
+
+			&.even {
+				background: #f8f8f8;
+			}
+
+			&.odd {
+				background: #fff;
+			}
+
+			td {
+				padding: 10px 12px;
+			}
+		}
+	}
+
+}

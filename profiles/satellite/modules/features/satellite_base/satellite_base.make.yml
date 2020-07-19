@@ -1,0 +1,62 @@
+# This is the makefile for satellite_base
+# The modules here are hard dependencies for the satellite.
+# Modules that are also a dependency of esn_base are in its makefile,
+# Modules that could be turned off are in satellite.make
+
+api:  '2'
+core: '7.x'
+
+
+# Specify common subdir of "contrib"
+defaults:
+  projects:
+    subdir: "contrib"
+    
+projects:
+  addressfield:
+    subdir: contrib/gis
+    version: '1.3'
+  ccl:
+    version: '1.6'
+  colorbox:
+    version: '2.13'
+  features_override:
+    version: '2.0-rc3'
+  imagecache_token:
+    version: '1.0'
+  jquery_update:
+    version: '2.7'
+  link:
+    version: '1.6'
+  manualcrop:
+    version: '1.7'
+  metatag:
+    version: '1.25'
+  service_links:
+    version: '2.4'
+  transliteration:
+    version: '3.2'
+
+libraries:
+  colorbox:
+    download:
+      type: file
+      url:  https://github.com/jackmoore/colorbox/archive/master.zip
+    destination:  libraries
+    directory_name: colorbox
+  imgareaselect_lib:
+    download:
+      type: get
+      url:  https://github.com/odyniec/imgareaselect/archive/v0.9.11-rc.1.tar.gz
+    directory_name: jquery.imgareaselect
+  jquery.imagesloaded:
+    download:
+      type: get
+      url:  https://github.com/desandro/imagesloaded/archive/v2.1.2.tar.gz
+    subtree:  imagesloaded-2.1.2
+  spyc:
+    download:
+      type: get
+      url: https://raw.githubusercontent.com/mustangostang/spyc/0.6.2/Spyc.php
+    destination:  libraries
+    directory_name: spyc

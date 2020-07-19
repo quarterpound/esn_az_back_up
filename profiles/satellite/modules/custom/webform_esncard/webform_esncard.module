@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * Implements hook_webform_component_info().
+ */
+
+function webform_esncard_webform_component_info()
+{
+    $components = array();
+    $components['esncard'] = array(
+        'label' => t('ESNcard'),
+        'description' => t('Create a field which checks if the ESNcard is valid'),
+        'features' => array(
+            'csv' => TRUE,
+            'email' => FALSE,
+            'email_address' => FALSE,
+            'email_name' => TRUE,
+            'required' => TRUE,
+            'title_display' => TRUE,
+            'title_inline' => TRUE,
+            'conditional' => TRUE,
+            'group' => FALSE,
+            'spam_analysis' => FALSE,
+            'attachment' => FALSE,
+        ),
+    );
+    return $components;
+}
+
+/**
+ * Webform component callback _webform_defaults_component()
+ */
+function _webform_defaults_esncard()
+{
+    return array(
+        'name' => '',
+        'form_key' => NULL,
+        'mandatory' => 0,
+        'pid' => 0,
+        'weight' => 0,
+        'extra' => array(
+            'description' => '',
+            'card_status' => 'valid',
+            'private' => FALSE,
+        ),
+    );
+}
+
+/**
+ * Webform component callback _webform_edit_component()
+ */
+function _webform_edit_esncard($component)
+{
+    $form['description'] = array();
+    $form = array();
+    $options = array('valid' => t('Valid ESNcard'), 'active' => t('Activated ESNcard'), 'no_validate' => t('No validation'));
+    $form['extra']['card_status'] = array(
+        '#type' => 'radios',
+        '#title' => t('Valid ESNcard status'),
+        '#default_value' => $component['extra']['card_status'],
+        '#weight' => -3,
+        '#options' => $options,
+        '#required' => TRUE,
+        '#description' => t('Status for the ESNcard to be considered valid'),
+    );
+    return $form;
+}
+
+/**
+ * Webform component callback _webform_render_component()
+ */
+function _webform_render_esncard($component, $value = NULL, $filter = TRUE)
+{
+    $form_item = array(
+        '#type' => 'textfield',
+        '#title' => $filter ? webform_filter_xss($component['name']) : $component['name'],
+        '#required' => $component['required'],
+        '#weight' => $component['weight'],
+        '#size' => 20,
+        '#description' => $filter ? webform_filter_descriptions($component['extra']['description']) : $component['extra']['description'],
+        '#default_value' => $filter ? webform_replace_tokens($component['value']) : $component['value'],
+        '#prefix' => '<div class="webform-component-textfield" id="webform-component-' . $component['form_key'] . '">',
+        '#suffix' => '</div>',
+        '#element_validate' => array('webform_esncard_validate'),
+    );
+
+    if (isset($value)) {
+        $form_item['#default_value'] = $value[0];
+    }
+
+    return $form_item;
+}
+
+
+/**
+ * Calls the esn_esncard_api function to check if the card is valid
+ */
+function webform_esncard_validate($component, &$form_state)
+{
+    $cardnumber = $component['#value'];
+    $cardstatus = $component['#webform_component']['extra']['card_status'];
+
+    if ($cardstatus == 'valid'){
+        if (!esn_esncard_api_valid_card($cardnumber)&& $cardnumber != ''){
+            form_error($component, t('The ESNcard number is invalid'));
+        }
+    }
+    if ($cardstatus == 'active'){
+        if (!esn_esncard_api_active_card($cardnumber)&& $cardnumber != ''){
+            form_error($component, t('The ESNcard number is invalid'));
+        }
+    }
+}
+
+/**
+ * Webform component callback _webform_display_component()
+ */
+function _webform_display_esncard($component, $value, $format = 'html'){
+    return array(
+        '#title' => $component['name'],
+        '#weight' => $component['weight'],
+        '#component' => $component,
+        '#format' => $format,
+        '#theme_wrappers' => $format == 'html' ? array('webform_element') : array('webform_element_text'),
+        '#webform_component' => $component,
+        '#value' => $value[0],
+    );
+}
+
+/**
+ * Webform component callback _webform_table_component()
+ */
+function _webform_table_esncard($component, $value){
+    return check_plain(empty($value[0]) ? 'No ESNcard' : $value[0]);
+}
+
+/**
+ * Webform component callback _webform_csv_headers_component()
+ */
+function _webform_csv_headers_esncard($component, $export_options) {
+    $header = array();
+    $header[0] = '';
+    $header[1] = '';
+    $header[2] = $component['name'];
+    return $header;
+}
+
+/**
+ * Webform component callback _webform_csv_data_component()
+ */
+function _webform_csv_data_esncard($component, $export_options, $value) {
+    return !isset($value[0]) ? 'No ESNcard' : $value[0];
+}

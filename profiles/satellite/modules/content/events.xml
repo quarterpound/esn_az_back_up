@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events>
+  <item>
+    <title>AGM Warsaw 2016</title>
+    <summary>The Anual General Meeting of ESN!</summary>
+    <date>
+      <start>+1 day</start>
+      <end>+4 days</end>
+    </date>
+    <body><![CDATA[
+<p style="text-align: justify;">Annual General Meeting, also known as the <strong>AGM</strong>, is the main decision-making body of ESN International. All the official sections of our network are invited to the AGM to decide about how the network should be run the following year. The AGM usually takes place in March or April and lasts for four days. The program begins on Thursday evening and the official meetings are scheduled for Friday, Saturday, and Sunday.</p><p style="text-align: justify;">As the AGM is a perfect opportunity to exchange information between all sections, a lot of time is dedicated to different workshops on Local Level, National Level and International Level.</p><p style="text-align: justify;">Apart from <strong>plenary session</strong> participants are invited to take part in the <strong>Flag Parade</strong> – a march through the main streets of the beautiful city of Warsaw. We advice to take your country’s flag, dress up in national colors and join the colorful Flag Parade.</p><p style="text-align: justify;">The best occasion to get to know the rest of ESNers is of course <strong>EuroDinner</strong>. It is the biggest and the most sumptuous feast in the year. AGM guests are invited to try traditional dishes from the whole Europe, meet volunteers from other countries and share their own culture with over a thousand people from the farthest corners of the world.</p><p style="text-align: justify;">The fancy <strong>Gala dinner</strong> is not only an elegant final party of the AGM, it is also an award ceremony for the <strong>ESN Star Awards</strong>. This beautiful tradition started in 2008 at AGM in Besançon (France) to award the best projects, activities, sections, and countries of the ESN network.</p>
+    <!]]></body>
+    <image>profiles/satellite/modules/content/files/warsaw.jpg</image>
+    <spotlight>profiles/satellite/modules/content/files/warsaw_spotlight.png</spotlight>
+  </item>
+  <item>
+    <title>NBM Thessaloniki</title>
+    <summary>The National Boards' Meeting (NBM) is a bi-annual ESN event, where members of different National Boards come together.</summary>
+    <date>
+      <start>2015-05-28</start>
+      <end>2015-05-31</end>
+    </date>
+    <body><![CDATA[
+<p style="text-align: justify;">The National Boards' Meeting (NBM) is a bi-annual ESN event, where members of different National Boards come together. The focus is on exchanging knowledge and experiences. Therefore, the heart of the meeting is the “<strong>Meet your colleagues</strong>” session. Traditionally the countries also present themselves in form of a presentation or poster.</p><p style="text-align: justify;">Since 2013, the NB Coordinator is together with the Vice-President of ESN International responsible for the agenda and chairing.</p><p style="text-align: justify;">The meeting evolved from the former Presidents' Meeting, where only Presidents and sometimes Vice-Presidents met in order to discuss national issues, but as the network developed more and more, the National Boards were seeking for a bigger platform and in 2010, the first official NBM took place.</p>
+    <!]]></body>
+    <image>profiles/satellite/modules/content/files/thessaloniki_logo.png</image>
+    <spotlight>profiles/satellite/modules/content/files/thessaloniki_spotlight.jpg</spotlight>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_01.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_02.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_03.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_04.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_05.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_06.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_07.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/thessaloniki_08.jpg</gallery>
+  </item>
+</events>

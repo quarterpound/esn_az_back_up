@@ -1,0 +1,53 @@
+<?php
+/**
+ * @file
+ *   Satellite Settings installer
+ */
+
+/**
+ * Implements hook_requirements()
+ * @param $phase
+ *   Phase to check for the requirements
+ */
+function satellite_settings_requirements($phase) {
+  $requirements = array();
+  // Ensure translations don't break during installation.
+  $t = get_t();
+  $galaxi_api = drupal_get_path('module', 'esn_galaxy_api');
+  $galaxi_api = drupal_parse_info_file($galaxi_api . '/esn_galaxy_api.info');
+  if (isset($galaxi_api['version'])) {
+    if ($galaxi_api['version'] !== NULL) {
+      $version = $galaxi_api['version'];
+      $version = substr($version, strpos($version, '-') + 1);
+      $version = explode('.', $version);
+      if ($version[0] < 2) {
+        $requirements['satellite_settings']['title'] = $t('Satellite Settings');
+        $requirements['satellite_settings']['value'] = $t('Satellite Settings requires ESN Galaxy API >= 7.x-2.0.<br />Installed version is %version.', array('%version' => $galaxi_api['version']));
+        $requirements['satellite_settings']['severity'] = REQUIREMENT_ERROR;
+      }
+    }
+  }
+  return $requirements;
+}
+
+/**
+ * Inform user how to enable the Mobile API
+ */
+function satellite_settings_update_7001() {
+  if (satellite_settings_get_scope() == 'local') {
+    return t('Please go to <a href="!url">!url</a> to enable this Satellite as Mobile API data service.', array('!url' => url('admin/settings/satellite/galaxy')));
+  }
+}
+
+/**
+ * Add ITcom Vice-Chairs as admins
+ */
+function satellite_settings_update_7002() {
+  $roles = variable_get('cas_roles_relations', array());
+  if (isset($roles['administrator'])){
+    $pattern = $roles['administrator'];
+    $pattern = str_ireplace(ESN_ROLE_ITCHAIR, ESN_ROLE_ITCHAIR . '|' . ESN_ROLE_ITViceCHAIR, $pattern);
+    $roles['administrator']= $pattern;
+    variable_set('cas_roles_relations', $roles);
+  }
+}

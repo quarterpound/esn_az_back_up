@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Satellite Events registration feature.
+ */
+
+include_once 'satellite_events_registration.features.inc';

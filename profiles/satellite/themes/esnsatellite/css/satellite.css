@@ -1,0 +1,186 @@
+/* 
+-------------------------------------------------------------- */
+/* The Calendar settings */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000325}}
+td.multi-day a {
+  color: #FFF;
+  margin-right: 10px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000331}}
+.calendar {
+  width: 100% !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000337}}
+.esn-blocks .block.esn-blockcolor-blue div.mini-day-on {
+  background: #00aef0;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000339}}
+.esn-blocks .block.esn-blockcolor-blue div.mini-day-on a {
+  color: #FFF;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000344}}
+.esn-blocks .block.esn-blockcolor-purple div.mini-day-on {
+  background: #ed008c;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000346}}
+.esn-blocks .block.esn-blockcolor-purple div.mini-day-on a {
+  color: #FFF;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000351}}
+.esn-blocks .block.esn-blockcolor-orange div.mini-day-on {
+  background: #f57b20;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000353}}
+.esn-blocks .block.esn-blockcolor-orange div.mini-day-on a {
+  color: #FFF;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000358}}
+.esn-blocks .block.esn-blockcolor-green div.mini-day-on {
+  background: #7ac143;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000360}}
+.esn-blocks .block.esn-blockcolor-green div.mini-day-on a {
+  color: #FFF;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000365}}
+.esn-blocks .block.esn-blockcolor-dark-blue div.mini-day-on {
+  background: #2e3192;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000367}}
+.esn-blocks .block.esn-blockcolor-dark-blue div.mini-day-on a {
+  color: #FFF;
+}
+
+/* 
+-------------------------------------------------------------- */
+/* LAYOUT
+-------------------------------------------------------------- */
+@media only screen and (min-width: 959px) {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000388}}
+  #middle > .inner {
+    padding-left: 10px;
+    padding-right: 10px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    word-wrap: break-word;
+  }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass-extensions\/zen-grids\/stylesheets\/zen\/_grids\.scss}line{font-family:\0000351}}
+  #middle > .inner:before, #middle > .inner:after {
+    content: "";
+    display: table;
+  }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass-extensions\/zen-grids\/stylesheets\/zen\/_grids\.scss}line{font-family:\0000356}}
+  #middle > .inner:after {
+    clear: both;
+  }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000393}}
+  #middle-main {
+    float: left;
+    width: 66.66667%;
+    margin-left: 0%;
+    margin-right: -66.66667%;
+    padding-left: 10px;
+    padding-right: 10px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    word-wrap: break-word;
+  }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000394}}
+  #middle-sidebar {
+    float: left;
+    width: 33.33333%;
+    margin-left: 66.66667%;
+    margin-right: -100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    word-wrap: break-word;
+  }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\0000399}}
+  #middle-middle #middle-first {
+    float: left;
+    width: 50%;
+    margin-left: 0%;
+    margin-right: -50%;
+    padding-left: 10px;
+    padding-right: 10px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    word-wrap: break-word;
+  }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\00003100}}
+  #middle-middle #middle-second {
+    float: left;
+    width: 50%;
+    margin-left: 50%;
+    margin-right: -100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    word-wrap: break-word;
+  }
+}
+/* BLOG
+-------------------------------------------------------------- */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\00003109}}
+.blog-posts-list ul {
+  padding-left: 0;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\00003112}}
+.blog-posts-list ul li {
+  background-image: url("../img/icon_blogpost.png");
+  background-position: 4px 2px;
+  background-repeat: no-repeat;
+  background-size: 14px auto;
+  font-size: 12px;
+  line-height: 17px;
+  list-style: outside none none;
+  margin-bottom: 12px;
+  padding-left: 24px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/home\/trinitec\/Documents\/esn\/satellite4\/build\/dev\/profiles\/satellite\/themes\/esnsatellite\/sass\/satellite\.scss}line{font-family:\00003123}}
+.blog-posts-list ul li .node-created {
+  display: block;
+  font-size: 0.8em;
+}
+
+/* Manually added styles because compass was not available */
+.messages h3 {
+  margin-top: 0;
+  font-size: 1.08em;
+}
+
+.nightmode #page,
+.nightmode #header,
+.nightmode #title,
+.nightmode #content,
+.nightmode #middle {
+  color: #888;
+  background-color: #333;
+}
+
+.nightmode .more-link a,
+.nightmode .calendar-calendar th,
+.nightmode .calendar-calendar td,
+.nightmode .calendar-legend th,
+.nightmode .calendar-legend td {
+  background-color: #333 !important;
+}
+

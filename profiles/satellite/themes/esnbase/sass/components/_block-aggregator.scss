@@ -1,0 +1,21 @@
+.block-aggregator {
+	.item-list {
+
+		ul {
+			padding-left: 0;
+		}
+
+		li {
+			padding-left: 24px;
+			list-style: none;
+			background-image: url('../img/icon_document.png');
+			background-size: 14px;
+			background-position: 4px 0;
+			background-repeat: no-repeat;
+			font-size: 12px;
+			line-height: 17px;
+			margin-bottom: 12px;
+
+		}
+	}
+}

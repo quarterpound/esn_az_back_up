@@ -1,0 +1,34 @@
+# WYSIWYG configuration makefile
+
+# You can run this makefile with the following command if you don't want to rebuild the entire satellite:
+# drush make --no-core --contrib-destination=contrib/ esn_wysiwyg.make.yml
+
+api:  2
+core: 7.x
+
+# Modules
+projects:
+  wysiwyg:
+    subdir: contrib
+    version: '2.5'
+
+# Libraries
+libraries:
+  ckeditor:
+    download:
+      type: "get"
+      url: "http://download.cksource.com/CKEditor/CKEditor/CKEditor%204.4.3/ckeditor_4.4.3_full.zip"
+    directory_name: "ckeditor"
+    destination: "libraries"
+  a11ychecker:
+    download:
+      type: "get"
+      url: "http://download.ckeditor.com/a11ychecker/releases/a11ychecker_1.0.0.zip"
+    directory_name: "a11ychecker"
+    destination: "libraries/ckeditor/plugins"
+  balloonpanel:
+    download:
+      type: "get"
+      url: "http://download.ckeditor.com/balloonpanel/releases/balloonpanel_4.5.9.zip"
+    directory_name: "balloonpanel"
+    destination: "libraries/ckeditor/plugins"

@@ -1,0 +1,110 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Content Base feature.
+ */
+
+include_once 'satellite_base.features.inc';
+
+function satellite_base_preprocess_page(&$variables) {
+
+  $satellite_info = system_get_info('module', 'satellite_base');
+  $variables['satelliteversion'] = $satellite_info['version'];
+
+}
+
+/**
+* Implements hook_admin_menu_output_alter().
+*/
+function satellite_base_admin_menu_output_alter(&$content) {
+  $content['menu']['helpcenter'] = array(
+    '#title' => t('Helpcenter'),
+    '#href' => 'http://helpcenter.esn.org',
+    '#weight' => 50,
+  );
+  $content['menu']['helpcenter']['issues'] = array(
+    '#title' => t('report issues'),
+    '#href' => 'http://satellite.esn.org/project/issues/satellite',
+    '#weight' => 50,
+  );
+  // there are more options that can be configurable look them up online if needed
+}
+
+/**
+* Implements hook_node_grants()
+*/
+function satellite_base_block_info() {
+  // The login block
+  $blocks['login'] = array(
+    'info' => t('Login/logout link'),
+  );
+  $blocks['about_us'] = array(
+    'info' => t('About us'),
+  );
+  return $blocks;
+}
+
+/**
+* Implements hook_block_view()
+*/
+function satellite_base_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'login':
+      $options = array(
+        'query' => drupal_get_destination(),
+        'attributes' => array(
+          'class' => array('login-logout'),
+        ),
+      );
+      if (user_is_logged_in()) {
+        $block['content'] = l(t('log out'), 'user/logout', $options);
+      }
+      else {
+        $block['content'] = l(t('log in'), 'user/login', $options);
+      }
+      break;
+    case 'about_us':
+      $about_us = 'Erasmus Student Network (ESN) is a non-profit international student organisation. Our mission is to represent international students, thus provide opportunities for cultural understanding and self-development under the principle of Students Helping Students.';
+      
+      $block['subject'] = t('About Us');
+      $block['content'] = nl2br(check_plain(variable_get('satellite_base_about_us', $about_us )));
+      break;
+  }
+  return $block;
+}
+
+
+/**
+* Implements hook_block_configure()
+*/
+function satellite_base_block_configure($delta = '') {
+  $form = array();
+
+  if ($delta == 'about_us') {
+    
+    $form['satellite_base_about_us'] = array(
+      '#type' => 'textarea',
+      '#title' => t('About us'),
+      '#description' => t ('Leave this text area empty to use the default text for the "About Us" block'),
+      '#default_value' => variable_get('satellite_base_about_us' ),
+    );
+  }
+  return $form;
+}
+
+/**
+* Implements hook_block_save()
+*/
+function satellite_base_block_save($delta = '', $edit = array()) {
+
+  if ($delta == 'about_us') {
+    if (!$edit['satellite_base_about_us']) {
+      variable_del('satellite_base_about_us');
+    }
+    else {
+      variable_set('satellite_base_about_us', $edit['satellite_base_about_us']);
+    }
+  }
+}

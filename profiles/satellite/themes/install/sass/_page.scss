@@ -1,0 +1,32 @@
+/* 
+--------------------------------------------------- */
+
+html {
+	background: #f5f5f5;
+}
+
+body {
+	color: $gray;
+}
+
+/* 
+--------------------------------------------------- */
+
+#wrapper {
+	width: 1000px;
+	margin: 50px auto;
+}
+
+#page {
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+}
+
+#main {
+	min-height: 500px;
+}
+
+/* 
+--------------------------------------------------- */

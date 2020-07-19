@@ -1,0 +1,20 @@
+
+.node-news.node-teaser {
+}
+.node-news.node-teaser .group-left {
+  width: 270px;
+}
+.node-news.node-teaser .group-right {
+  width: auto;
+  float: none;
+  margin-left: 270px;
+}
+
+.node-news.view-mode-core_small_teaser  .group-left {
+  width: 110px;
+}
+.node-news.view-mode-core_small_teaser  .group-right {
+  width: auto;
+  float: none;
+  margin-left: 110px;
+}

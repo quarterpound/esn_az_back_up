@@ -1,0 +1,223 @@
+<?php
+
+
+define('ESN_GALAXY_API_WATCHDOG', 'Galaxy API');
+require_once 'inc/ESNEntity.php';
+require_once 'inc/ESNCountry.php';
+require_once 'inc/ESNSection.php';
+require_once 'esn_galaxy_api.api.esn_country.inc';
+require_once 'esn_galaxy_api.api.esn_section.inc';
+require_once 'esn_galaxy_api.functions.inc';
+
+/**
+ * Loads a new JsonMapper instance
+ *
+ * @return JsonMapper|bool
+ */
+function esn_galaxy_api_load_jsonmapper($map_private_protected = FALSE) {
+  if (!class_exists('JsonMapper')) {
+    watchdog(ESN_GALAXY_API_WATCHDOG, 'The JsonMapper library is missing. ESN Countries and Sections cannot be imported!', WATCHDOG_ERROR);
+    return FALSE;
+  }
+  libraries_load('jsonmapper');
+  $mapper = new JsonMapper();
+  if ($map_private_protected) {
+    $mapper->bIgnoreVisibility = TRUE;
+  }
+
+  return $mapper;
+}
+
+/**
+ * Implements hook_entity_info()
+ */
+function esn_galaxy_api_entity_info() {
+  $esn = array();
+  $esn += _esn_country_info();
+  $esn += _esn_section_info();
+  return $esn;
+}
+
+function _esn_galaxy_api_set_property_callbacks(&$info) {
+  foreach ($info['properties'] as $name => &$data) {
+    $data['getter callback'] = 'entity_property_verbatim_get';
+    $data['setter callback'] = 'entity_property_verbatim_set';
+  }
+}
+
+/**
+ * Implements hook_entity_property_info_alter().
+ */
+function esn_galaxy_api_entity_property_info_alter(&$info) {
+  _esn_country_property_info_alter($info['esn_country']);
+  _esn_section_property_info_alter($info['esn_section']);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function esn_galaxy_api_menu() {
+  $items = array();
+
+  $items['admin/config/regional/galaxy_api'] = array(
+    'title' => 'ESN Galaxy API',
+    'description' => 'Settings for ESN Sections and Country lists.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('esn_galaxy_api_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'esn_galaxy_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -7,
+  );
+
+  return $items;
+
+}
+
+function _esn_galaxy_api_map_array_to_code($data) {
+  $result = array();
+  foreach ($data as $item) {
+    $result[$item->code->value()] = $item;
+  }
+  return $result;
+}
+
+function _esn_galaxy_api_wrap_entity(&$entity, $key, $args) {
+  if (!is_array($args)) {
+    $args = array('type' => $args);
+  }
+  $type = $args['type'];
+  $entity = entity_metadata_wrapper($type, $entity);
+}
+
+function _esn_galaxy_api_get_properties($entity, array $options, $name) {
+  switch ($name) {
+    case "country":
+      $cid = (int) $entity->country_id;
+      if ($cid === 0) {
+        return esn_country_create(array('code' => '')); // return a dummy object
+      }
+      $country = esn_country_load($cid);
+      return $country;
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function esn_galaxy_api_field_formatter_info() {
+  return array(
+    'esn_sc_name' => array(
+      'label' => t('Section name'),
+      'field types' => array('text'),
+    ),
+    'esn_cn_name' => array(
+      'label' => t('Country name'),
+      'field types' => array('text'),
+    ),
+    'esn_sc_cn_name' => array(
+      'label' => t('Section and country name'),
+      'field types' => array('text'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function esn_galaxy_api_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+
+  $elements = array();
+  switch ($display['type']) {
+    case 'esn_sc_name':
+      foreach ($items as $delta => $item) {
+        $elements[$delta] = array(
+          '#markup' => esn_galaxy_api_section_name($item['value']),
+        );
+      }
+      break;
+    case 'esn_cn_name':
+      foreach ($items as $delta => $item) {
+        $elements[$delta] = array(
+          '#markup' => esn_galaxy_api_country_name(substr($item['value'], 0, 2)),
+        );
+      }
+      break;
+    case 'esn_sc_cn_name':
+      foreach ($items as $delta => $item) {
+        $elements[$delta] = array(
+          '#markup' => esn_galaxy_api_section_name($item['value']) . ", " . esn_galaxy_api_country_name(substr($item['value'], 0, 2)),
+        );
+      }
+      break;
+  }
+  return $elements;
+}
+
+/**
+ * Implements hook_webform_select_options_info().
+ */
+function esn_galaxy_api_webform_select_options_info() {
+  $items = array();
+  if (variable_get('esn_galaxy_api_webform', 0)) {
+    $items['esn_sections'] = array(
+      'title' => t('ESN Sections'),
+      'options callback' => 'esn_galaxy_api_webform_options_sections',
+    );
+    $items['esn_countries'] = array(
+      'title' => t('ESN Countries'),
+      'options callback' => 'esn_galaxy_api_countries',
+    );
+  }
+  return $items;
+}
+
+function esn_galaxy_api_webform_options_sections($component, $flat, $filter, $arguments) {
+  if (!$flat) {
+    return esn_galaxy_api_sections();
+  }
+  else {
+    return esn_galaxy_api_sections_all_flat();
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function esn_galaxy_api_cron() {
+  // repopulation of tables
+  //flush the section and country table if they should be rebuilt every time.
+  if (variable_get('esn_galaxy_api_cron', 0)) {
+    module_load_include('inc', 'esn_galaxy_api', 'esn_galaxy_api.load');
+    $enable_site_logo_check = &drupal_static('_esn_galaxy_api_process_metadata::site-logo');
+    $enable_site_logo_check = NULL; // If set to NULL, it can be enabled by config, otherwise it is disabled. It should only run during cron because it needs quite long!!
+    _esn_galaxy_api_save_countries();
+    _esn_galaxy_api_save_sections();
+
+    watchdog('esn_galaxy_api', 'The section list has been updated by cron.');
+  }
+}
+
+/**
+ * Implements hook_countries_alter().
+ */
+function esn_galaxy_api_countries_alter(&$countries) {
+  _esn_galaxy_api_alter_countries($countries, FALSE);
+}
+
+/**
+ * Implements hook_countries_get_countries_alter().
+ */
+function esn_galaxy_api_countries_get_countries_alter(&$countries) {
+  _esn_galaxy_api_alter_countries($countries, TRUE);
+}
+
+function _esn_galaxy_api_alter_countries(&$countries, $countries_module) {
+  $esn_countries = array_keys(esn_galaxy_api_countries());
+  foreach (array_keys($countries) as $key) {
+    if (!in_array($key, $esn_countries)) {
+      unset($countries[$key]);
+    }
+  }
+}

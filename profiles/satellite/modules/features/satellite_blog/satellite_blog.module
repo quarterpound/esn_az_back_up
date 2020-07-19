@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Blog feature.
+ */
+
+include_once 'satellite_blog.features.inc';

@@ -1,0 +1,53 @@
+
+/* TRANSITIONS
+-------------------------------------------------------------- */
+
+body, input, img, a, ul, li, #header, #header div, article, .actions, label {
+	transition: all .25s linear;
+	-o-transition: all .25s linear;
+	-moz-transition: all .25s linear;
+	-webkit-transition: all .25s linear;
+}
+
+// Exceptions
+
+a.contextual-links-trigger {
+	transition: none;
+	-o-transition: none;
+	-moz-transition: none;
+	-webkit-transition: none;
+}
+
+
+/* FADE-IN EFFECT
+-------------------------------------------------------------- */
+ 
+body.fade-effect {
+
+	#spotlight, h1 {
+		@include fadein(0.2s);
+	}
+
+	#content, #footer {
+		@include fadein(0.5s);
+	}
+
+	#middle {
+		@include fadein(0.6s);
+	}
+
+	#footer {
+		@include fadein(0.8s);
+	}
+
+	// MAINTENANCE MODE
+
+	#maintenance-icon {
+		@include fadein(0.2s);
+	}
+
+	#maintenance-message {
+		@include fadein(0.5s);	
+	}
+
+}

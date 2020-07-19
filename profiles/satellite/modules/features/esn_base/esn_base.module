@@ -1,0 +1,95 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Base Feature feature.
+ */
+
+include_once 'esn_base.features.inc';
+
+/**
+* Implements hook_form_FORM_ID_alter()
+*/
+function esn_base_form_user_login_alter(&$form, &$form_state, $form_id) {
+  // position the CAS links below the login button
+  $form['cas_links']['#weight'] = 100;
+  $form['actions']['#weight'] = 50;
+}
+
+
+/**
+* Revert specified features.
+*/
+function esn_base_features_revert($modules) {
+  module_load_include('inc', 'features', 'features.export');
+  features_include();
+  foreach ($modules as $module) {
+    if (($feature = feature_load($module, TRUE)) && module_exists($module)) {
+      $components = array();
+      // Forcefully revert all components of a feature.
+      foreach (array_keys($feature->info['features']) as $component) {
+        if (features_hook($component, 'features_revert')) {
+          $components[] = $component;
+        }
+      }
+    }
+    foreach ($components as $component) {
+      features_revert(array($module => array($component)));
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function esn_base_preprocess_html(&$variables){
+  // Add admin.css if current page is using the adminimal theme which means
+  // it's an admin page. admin.css adds some styles specific for administration
+  // pages and must not be added to front-end pages.
+  global $theme;
+  if ($theme == 'adminimal') {
+    $themepath = drupal_get_path('module', 'esn_base') . '/css/admin.css';
+    drupal_add_css($themepath, array(
+      'group' => CSS_THEME,
+      'weight => 100'
+    ));
+  }
+}
+
+/**
+ * Install switch internal to ITCom. If set during site install this switch can be used to
+ * disable some production optimized settings like CSS and JS caching, or enable some development
+ * specific settings or modules.
+ * Start site install with install.php?mode=dev
+ *
+ * @return bool TRUE if site install is started in development mode.
+ */
+function esn_base_is_development_install(){
+  global $install_state;
+  if (isset($install_state['parameters']['mode'])){
+    return $install_state['parameters']['mode'] == 'dev';
+  }
+  return FALSE;
+}
+
+/**
+ * Checks if the remote caller has permission to access the data requested by remote IP address.
+ * @param $variableName Name of the variable storing the comma separated list of allowed IP address parts
+ *
+ * @return bool True if access is permitted
+ */
+function esn_base_check_remote_permission($variableName) {
+  $allowedIPs = explode(',', variable_get($variableName, ''));
+  if (count($allowedIPs) > 0){
+    $permit = false;
+    $remoteIP = $_SERVER['REMOTE_ADDR'];
+    foreach ($allowedIPs as $ip) {
+      if (strpos($remoteIP, $ip) === 0) {
+        return true;
+      }
+    }
+    if (!$permit) {
+      return false;
+    }
+  }
+  return true;
+}

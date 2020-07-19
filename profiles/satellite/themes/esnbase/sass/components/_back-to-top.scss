@@ -1,0 +1,24 @@
+
+/* BACK TO TOP
+-------------------------------------------------------------- */
+
+#back-top {
+	position: fixed;
+	bottom: 15px;
+	right: 20px;
+
+	a {
+		display: inline-block;
+		width: 40px;
+		height: 40px;
+		background: rgba(0,0,0,0.1) url('../img/button_backtop.png') center center no-repeat;
+		color: #fff;
+		text-decoration: none;
+		text-indent: -9999px;
+		border-radius: $radius;
+
+		&:hover {
+			background-color: rgba(0,0,0,0.8);
+		}
+	}
+}

@@ -1,0 +1,34 @@
+name = Satellite Social Media Integration
+description = provides facebook share & like buttons etc...
+core = 7.x
+package = ESN Satellite
+version = 7.x-1.0
+dependencies[] = ctools
+dependencies[] = satellite_base
+dependencies[] = service_links
+dependencies[] = service_links_displays
+dependencies[] = strongarm
+dependencies[] = widget_services
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[variable][] = service_links_displays
+features[variable][] = service_links_fl_action
+features[variable][] = service_links_fl_colorscheme
+features[variable][] = service_links_fl_font
+features[variable][] = service_links_fl_height
+features[variable][] = service_links_fl_layout
+features[variable][] = service_links_fl_show_faces
+features[variable][] = service_links_fl_width
+features[variable][] = service_links_fs_type
+features[variable][] = service_links_gpo_annotation
+features[variable][] = service_links_gpo_size
+features[variable][] = service_links_gpo_width
+features[variable][] = service_links_lsb_countmode
+features[variable][] = service_links_pb_countlayout
+features[variable][] = service_links_tw_data_count
+project path = profiles/satellite/modules/features
+
+; Information added by drush on 2019-06-09
+version = "7.x-4.6.14"
+project = "satellite"
+datestamp = "1560106816"

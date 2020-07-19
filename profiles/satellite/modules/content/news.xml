@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<news>
+  <item>
+    <title>This site is using Satellite 4</title>
+    <summary>New website based on Satellite 4!</summary>
+    <body><![CDATA[<p>ESN Satellite is the free website template for ESN sections, developed and maintained by <strong><a href="http://www.esn.org" target="_blank">ESN International</a></strong>.<br>ESN Satellite is...</p><ul><li>beautiful: a fresh, complete ESN looking design</li><li>easy: if you can use webmail, you can master a Satellite</li><li>unified: local, national and international websites share the same looks</li><li>tailored to the needs of ESN sections</li><li>high quality based on the widely adopted and solid Drupal platform</li><li>free for all sections, national boards and ESN event organizers</li><li>part of the ESN Galaxy</li></ul><p>The IT Committe and ESN International support all sections, national boards and ESN event organizers willing to try the ESN Satellite. Don't hessitate to <strong><a href="http://helpcenter.esn.org" target="_blank">contact us</a></strong> with any questions regarding ESN Satellite.</p><!]]>
+    </body>
+    <image>profiles/satellite/modules/content/files/satellite4-sq.png</image>
+    <spotlight>profiles/satellite/modules/content/files/satellite4.png</spotlight>
+    <gallery>profiles/satellite/modules/content/files/satellite2_screenshot.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/satellite3.1_screenshot.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/satellite3.2_screenshot.jpg</gallery>
+    <gallery>profiles/satellite/modules/content/files/satellite4.5_screenshot.jpg</gallery>
+  </item>
+  <item>
+    <title>Press Release: Erasmus will you vote?</title>
+    <summary>New EU funded project under the Lifelong Learning Programme: Erasmus Voting Assessment.</summary>
+    <body><![CDATA[<p style="text-align: justify;"><strong>The European Students Forum</strong> (AEGEE-Europe),&nbsp;with the support of its partners - the <strong>Erasmus&nbsp;Student Network</strong> (ESN) and <strong>Generation Europe&nbsp;Foundation</strong> (GEF) – organised a conference to&nbsp;launch the new EU funded project under the&nbsp;Lifelong Learning Programme: Erasmus Voting&nbsp;Assessment. The event, hosted by the&nbsp;Parliament’s Intergroup on Youth Issues,&nbsp;gathered several important stakeholders. <strong>Doris&nbsp;Pack</strong>, Member of the European Parliament,&nbsp;Chair of the CULT Committee and Rapporteur of&nbsp;the European Parliament for Erasmus+ opened&nbsp;the conference, giving valuable input and&nbsp;stressing the importance of exploring the&nbsp;influence of the Erasmus programme on EUcitizenship. <strong>Vanessa Debiais-Sainton</strong>, Head of&nbsp;the Erasmus Unit of DG EAC, represented the&nbsp;European Commission. She stressed the value and impact of the project and stated that its <strong>results will reinforce the importance of Erasmus+</strong> to policy makers and MEPs. Frank Welz, Vice President of the European Sociological Association and member of the Advisory board of the EVA project, also joined the discussion, providing an academic research perspective. The audience was enriched with members from several youth organisations and EU platforms interested in the project and its outcomes.</p>
+<p style="text-align: justify;">The partners presented the main project milestones so far, such as the background report and the two surveys, created by GEF, as well as the promotional campaign, designed by ESN. The first survey aims to explore the attitude of students towards European identity and the European Parliament elections that will take place in May 2014. The second survey will be released directly after the elections and explore whether students actually voted. The final report, which will include the background report as well as the survey results and analysis, will be released in September 2014, during the project’s final conference.</p>
+<p>The Erasmus Voting Assessment survey has been launched! Visit our website to fill in the survey:&nbsp;<a href="http://erasmusvoting.eu">www.erasmusvoting.eu</a></p>
+<p>For more information contact us:&nbsp;<a href="mailto:info@erasmusvoting.eu" target="_blank">info@erasmusvoting.eu</a>&nbsp;</p>
+<div id="emvideo-youtube-flash-wrapper-1"><object type="application/x-shockwave-flash" data="http://www.youtube.com/v/sKZlGD9EcFE&amp;rel=1&amp;enablejsapi=1&amp;playerapiid=ytplayer&amp;fs=1" id="emvideo-youtube-flash-1" height="350" width="425">
+          <param name="movie" value="http://www.youtube.com/v/sKZlGD9EcFE&amp;rel=1&amp;enablejsapi=1&amp;playerapiid=ytplayer&amp;fs=1">
+          <param name="allowScriptAccess" value="sameDomain">
+          <param name="quality" value="best">
+          <param name="allowFullScreen" value="true">
+          <param name="bgcolor" value="#FFFFFF">
+          <param name="scale" value="noScale">
+          <param name="salign" value="TL">
+          <param name="FlashVars" value="playerMode=embedded">
+          <param name="wmode" value="transparent">
+        </object></div>
+
+</div><!]]>
+    </body>
+    <image>profiles/satellite/modules/content/files/EVA_orange.png</image>
+    <file>profiles/satellite/modules/content/files/201402_EVA_LaunchingConference_PressRelease_Final_Pic.pdf</file>
+    <spotlight>profiles/satellite/modules/content/files/eva_toulouse_web_spotlight.jpg</spotlight>
+  </item>
+
+</news>

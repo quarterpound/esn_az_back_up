@@ -1,0 +1,88 @@
+; -------------------------------------------------
+; INFO
+; -------------------------------------------------
+
+name          = ESN Base
+description   = Base theme for ESN websites.
+package       = ESN
+version       = 0.1
+core          = 7.x
+base theme    = zen
+
+; -------------------------------------------------
+; REGIONS
+; -------------------------------------------------
+
+regions[nav_primary]      = Navigation (Primary)
+regions[nav_secondary]    = Navigation (Secondary)
+
+regions[spotlight]        = Spotlight
+
+regions[content]          = Content (Main)
+regions[content_sidebar]  = Content (Sidebar)
+
+regions[bottom]           = Bottom
+
+regions[footer_first]     = Footer (Left)
+regions[footer_second]    = Footer (Middle)
+regions[footer_third]     = Footer (Right)
+regions[footer_bottom]    = Footer (Bottom)
+
+; These are hidden, but we need them for the html.tpl (Don't delete)
+regions[page_top]         = Page top
+regions[page_bottom]      = Page bottom
+
+
+; -------------------------------------------------
+; SETTINGS
+; -------------------------------------------------
+
+settings[nav-size] = m
+settings[fade-effect] = 0
+
+
+; -------------------------------------------------
+; CSS
+; -------------------------------------------------
+
+stylesheets[all][] = css/esnbase.css
+stylesheets[all][] = css/custom.css
+
+
+
+
+; -------------------------------------------------
+; SCRIPTS
+; -------------------------------------------------
+
+scripts[] = js/classie.js
+scripts[] = js/script.js
+
+
+
+
+
+; Information added by drush on 2013-09-03
+version = "unknown"
+project = "esnbase"
+datestamp = "1378209171"
+
+
+
+; Information added by drush on 2013-10-26
+version = "unknown"
+project = "esnbase"
+datestamp = "1382785976"
+
+
+
+; Information added by drush on 2013-12-23
+version = "unknown"
+project = "esnbase"
+datestamp = "1387825535"
+
+
+; Information added by drush on 2018-10-04
+version = "unknown"
+project = "esnbase"
+datestamp = "1538610862"

@@ -1,0 +1,134 @@
+// ------------------------------------------------
+//  FONT DECLARATIONS
+// ------------------------------------------------
+
+	@include declare-font-face('Roboto', 'robotoregular');
+	@include declare-font-face('Roboto', 'robotobold', bold);
+	@include declare-font-face('Roboto', 'robotoitalic', normal, italic);
+	@include declare-font-face('Roboto', 'robotobolditalic', bold, italic);
+
+	@include declare-font-face('Roboto Light', 'robotolight');
+	@include declare-font-face('Roboto Light', 'robotomedium', bold);
+	@include declare-font-face('Roboto Light', 'robotolightitalic', normal, italic);
+	@include declare-font-face('Roboto Light', 'robotomediumitalic', bold, italic);
+
+	@include declare-font-face('Roboto Thin', 'robotothin');
+	@include declare-font-face('Roboto Thin', 'robotomedium', bold);
+	@include declare-font-face('Roboto Thin', 'robotothinitalic', normal, italic);
+	@include declare-font-face('Roboto Thin', 'robotomediumitalic', bold, italic);
+
+	@include declare-font-face('Roboto Condensed', 'robotocondensed');
+	@include declare-font-face('Roboto Condensed', 'robotoboldcondensed', bold);
+	@include declare-font-face('Roboto Condensed', 'robotocondenseditalic', normal, italic);
+
+	@include declare-font-face('Open Sans', 'opensansregular');
+	@include declare-font-face('Open Sans', 'opensansbold', bold);
+	@include declare-font-face('Open Sans', 'opensansitalic', normal, italic);
+
+	@include declare-font-face('Open Sans Light', 'opensanslight');
+	@include declare-font-face('Open Sans Light', 'opensansbold', bold);
+	@include declare-font-face('Open Sans Light', 'opensanslightitalic', normal, italic);
+
+
+
+
+
+// ------------------------------------------------
+//  FONT STACKS
+// ------------------------------------------------
+
+	$times-new-roman: "Times New Roman", Times, Georgia, "DejaVu Serif", serif;
+	$times:           Times, "Times New Roman", Georgia, "DejaVu Serif", serif;
+	$georgia:         Georgia, "Times New Roman", "DejaVu Serif", serif;
+
+	$verdana:         Verdana, Tahoma, "DejaVu Sans", sans-serif;
+	$tahoma:          Tahoma, Verdana, "DejaVu Sans", sans-serif;
+	$helvetica:       Helvetica, Arial, "Nimbus Sans L", sans-serif;
+	$arial:           Arial, Helvetica, "Nimbus Sans L", sans-serif;
+	$roboto:          'Roboto', 'Georgia', rc, Helvetica, Arial, "Nimbus Sans L", sans-serif;
+
+	$roboto:          'Roboto', Helvetica, Arial, "Nimbus Sans L", sans-serif;
+	$roboto-light:    'Roboto Light', Helvetica, Arial, "Nimbus Sans L", sans-serif;
+	$roboto-thin:     'Roboto Thin', Helvetica, Arial, "Nimbus Sans L", sans-serif;
+	$roboto-condensed:'Roboto Condensed', Helvetica, Arial, "Nimbus Sans L", sans-serif;
+
+	$open-sans:       'Open Sans', 'Roboto', Helvetica, Arial, "Nimbus Sans L", sans-serif;
+	$open-sans-light: 'Open Sans Light', 'Roboto Light', Helvetica, Arial, "Nimbus Sans L", sans-serif;
+
+
+	// For an explanation of why "sans-serif" is at the end of this list, see
+	// http://meyerweb.com/eric/thoughts/2010/02/12/fixed-monospace-sizing/
+	$courier:         "Courier New", "DejaVu Sans Mono", monospace, sans-serif;
+
+
+
+
+
+// ------------------------------------------------
+//  FONT SELECTION
+// ------------------------------------------------
+
+	$base-font-family:       $open-sans-light;    // The font family set on the html element.
+	$font-monospace:         $courier;
+
+	$font-header:            $open-sans-light;
+	$font-body:              $open-sans-light;
+
+	$font-sitename:          $roboto-condensed;
+
+	$font-block-header:      $roboto-condensed;
+	$font-block-content:     $open-sans;
+
+	$font-spotlight-header:  $roboto-condensed;
+	$font-spotlight-content: $roboto;
+
+	$font-nav-firstlevel:    $roboto-condensed;
+	$font-nav-sublevel:      $roboto;
+
+	$font-mobile-nav:        $roboto;
+
+	$font-console:           $roboto;
+	$font-tabs:              $roboto-condensed;
+
+
+
+
+
+// ------------------------------------------------
+//  DEFAULT SIZES
+// ------------------------------------------------
+
+	$base-font-size:   14px; // The font size set on the root html element.
+	$base-line-height: 24px; // This line-height determines the basic unit of vertical rhythm.
+
+	$h1-font-size: 3    * $base-font-size;
+	$h2-font-size: 1.5  * $base-font-size;
+	$h3-font-size: 1.17 * $base-font-size;
+	$h4-font-size: 1    * $base-font-size;
+	$h5-font-size: 0.83 * $base-font-size;
+	$h6-font-size: 0.75 * $base-font-size;
+
+
+
+
+
+// ------------------------------------------------
+//  NAVIGATION FONT SIZES
+// ------------------------------------------------
+
+	// TABLET
+
+	$tablet-nav-fontsize-s:   11px;
+	$tablet-nav-fontsize-m:   13px;
+	$tablet-nav-fontsize-l:   15px;
+
+
+	// DESKTOP
+
+	$desktop-nav-fontsize-s:  14px;
+	$desktop-nav-fontsize-m:  16px;
+	$desktop-nav-fontsize-l:  18px;
+    
+
+
+

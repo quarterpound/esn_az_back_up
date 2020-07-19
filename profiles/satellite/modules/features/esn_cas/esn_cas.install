@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the features module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function esn_cas_install() {
+
+  // Soft configuration that may be changed.
+  variable_set('cas_roles_roles', '[cas:attribute:roles]');
+  // Attributes
+  variable_set('cas_attributes_overwrite', 1);
+  variable_set('cas_attributes_sync_every_login', 1);
+  variable_set('cas_attributes_overwrite', 1);
+  variable_set('cas_attributes_relations', array(
+    'name' => '[cas:name]',
+    'mail' => '[cas:attribute:mail]',
+  ));
+
+  // admin will be admin
+  db_insert('cas_user')->fields(array('uid' => 1, 'cas_name' => 'admin'))->execute();
+}
+
+/**
+ * Change CAS server from galaxy.esn.org to accounts.esn.org
+ */
+// Fixes #83
+function esn_cas_update_7001() {
+  variable_set('cas_server', 'accounts.esn.org');
+}

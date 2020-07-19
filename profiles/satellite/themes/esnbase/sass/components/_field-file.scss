@@ -1,0 +1,79 @@
+/* 
+-------------------------------------------------------------- */
+
+.field-type-file {
+
+	margin-top: 30px;
+	
+
+	.field-label {
+		text-transform: uppercase;
+		margin-bottom: 10px;
+		line-height: normal;
+		font-size: 11px;
+	}
+
+	.field-items {
+			
+			overflow: auto;
+			word-spacing: 0;
+
+		.field-item {
+
+			display: inline-block;
+			margin-bottom: 5px;
+			width: 100%;
+
+			@include breakpoint(mobile-landscape) {
+				margin-right: 10px;
+				width: 45%;
+			}
+
+			.file {
+				
+				display: table;
+				vertical-align: middle;
+				width: 100%;
+				margin: 0;
+
+				img {
+					height: 40px;
+					display: none !important;
+					vertical-align: middle;
+					margin: 0;
+				}
+
+				a {
+					background: url('../img/files/blank.png') 14px center no-repeat;
+					background-size: 24px;
+					height: 58px;
+					width: 100%;
+					display: table-cell;
+					vertical-align: middle; 
+					padding: 0 16px 0 52px;
+					margin: 0;
+					line-height: normal;
+					font-weight: bold;
+					font-size: 13px;
+					color: #999;
+					border: 2px solid #eee;
+					border-radius: $radius;
+
+					&:hover {
+						border-color: $esn-blue;
+						color: #333;
+						text-decoration: none;
+					}
+				}
+
+				a[href$='.pdf'] {
+					background-image: url('../img/files/application-pdf.png');
+				}
+
+				a[href$='.doc'], a[href$='.docx'] {
+					background-image: url('../img/files/x-office-document.png');
+				}
+			}
+		}
+	}
+}

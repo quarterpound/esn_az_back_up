@@ -1,0 +1,84 @@
+/* CONSOLE
+-------------------------------------------------------------- */
+
+#console {
+
+
+
+	@include breakpoint(desktop) {
+		margin-top: 20px;
+
+		.inner {
+			padding: 0 20px;
+		}
+	}
+
+}
+
+div.messages {
+	border: none;
+	color: #fff;
+	margin: 0 0 1px 0;
+	padding: 12px 10px 12px 42px;
+	background-position: 10px 9px;
+	background-size: 22px;
+	font-size: 14px;
+	line-height: 16px;
+	font-family: $font-console;
+	font-weight: normal;
+	
+
+	@include breakpoint(desktop) {
+		margin: 5px 0 0 0;
+		border-radius: $radius;
+	}
+
+	ul {
+		list-style: square;
+
+	}
+
+	p, li {
+		word-wrap:break-word;
+		margin-bottom: 5px;
+
+		&:last-child {
+			margin: 0;
+		}
+	}
+
+	a {
+		color: #fff;
+		font-weight: bold;
+		background: rgba(255,255,255,0.2);
+		border-radius: $radius;
+		padding: 3px 6px;
+
+		&:hover {
+			background: rgba(0,0,0,0.2);
+			text-decoration: none;
+		}
+		
+		&.krumo-name {
+			color: #404000;
+		}
+	}
+
+	&.status {
+		background-color: #71D154;
+		background-image: url('../img/message_status.png');
+	}
+
+	&.warning {
+		background-color: #FEBB02;
+		background-image: url('../img/message_warning.png');
+	}
+
+	&.error {
+		background-color: #F65E5E;
+		background-image: url('../img/message_error.png');
+	}
+}
+
+
+

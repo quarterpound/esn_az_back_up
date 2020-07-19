@@ -1,0 +1,305 @@
+<?php
+
+/**
+ * @file
+ * Provides a configuration option to select custom themes for blocks
+ *
+ * esn_blocktheme allows an admin to define tpl files for standard block templates
+ * and provides a select box on the block configure form so the user can select
+ * a tpl file to use as opposed to having to override the templates by block ID.
+ *
+ */
+
+/**
+ * Set the block theme of a block.
+ */
+function esn_blocktheme_set_blocktheme($module, $delta, $color = 'blue', $icon = 'esnstar', $style = 'half') {
+  $var_name = $module . '-' . $delta;
+
+  $esn_blocktheme = variable_get('esn_blocktheme', array());
+
+  $esn_blocktheme[$var_name] = array(
+    'style' => $style,
+    'color' => $color,
+    'icon' => $icon,
+  );
+  variable_set('esn_blocktheme', $esn_blocktheme);
+}
+
+/**
+ * Set the block icon of a block.
+ */
+function esn_blocktheme_set_icon($module, $delta, $icon) {
+  $var_name = $module . '-' . $delta;
+
+  $esn_blocktheme = variable_get('esn_blocktheme', array());
+  if (!isset($esn_blocktheme[$var_name]) || !is_array($esn_blocktheme[$var_name])) {
+    $esn_blocktheme[$var_name] = esn_blocktheme_get_default($module, $delta);
+  }
+  $esn_blocktheme[$var_name]['icon'] = $icon;
+
+  variable_set('esn_blocktheme', $esn_blocktheme);
+}
+
+/**
+ * The default settings for blocks with no configuration.
+ */
+function esn_blocktheme_get_default($module = NULL, $delta = NULL) {
+  if ($module) {
+    $color = esn_blocktheme_paint_by_number($module, $delta);
+  }
+  else {
+    $color = 'blue';
+  }
+  return array(
+    'style' => 'half',
+    'color' => $color,
+    'icon' => 'esnstar',
+  );
+}
+
+
+function _esn_blocktheme_get_admin_form(&$form, &$form_state, $module = null, $delta = null) {
+
+  $esn_blocktheme = variable_get('esn_blocktheme', array());
+  $var_name = $module . '-' . $delta;
+  if (isset($esn_blocktheme[$var_name])) {
+    $default = $esn_blocktheme[$var_name];
+  } else {
+    $default = esn_blocktheme_default_new($module, $delta);
+  }
+
+  $form['settings']['#weight'] = -2;
+  $form['regions']['#weight'] = -1;
+  $form['esn_blocktheme'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Block Theme'),
+    '#weight' => 0,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['esn_blocktheme']['esn_blocktheme_style'] = array(
+    '#type' => 'hidden',
+    '#title' => t('Style'),
+    '#default_value' => $default['style'],
+    '#options' => array(
+      'full' => t('Full'),
+      'half' => t('Half'),
+      'empty' => t('Empty'),
+    )
+  );
+  $form['esn_blocktheme']['esn_blocktheme_color'] = array(
+    '#type' => 'select',
+    '#title' => t('Color'),
+    '#default_value' => array($default['color']),
+    '#options' => esn_blocktheme_esn_colors(),
+  );
+  $form['esn_blocktheme']['esn_blocktheme_icon'] = array(
+    '#type' => 'select',
+    '#title' => t('Icon'),
+    '#default_value' => array($default['icon']),
+    '#options' => array(
+      'none' => t('- None -'),
+      'esnstar' => t('ESN Star'),
+      'beer' => t('Beer'),
+      'book' => t('Book'),
+      'bookmark' => t('Bookmark'),
+      'briefcase' => t('Briefcase'),
+      'calendar' => t('Calendar'),
+      'clock' => t('Clock'),
+      'clip' => t('Clip'),
+      'cloud' => t('Cloud'),
+      'coffee' => t('Coffee'),
+      'cog' => t('Cog'),
+      'direction' => t('Direction'),
+      'document' => t('Document'),
+      'download' => t('Download'),
+      'email' => t('Email'),
+      'flag' => t('Flag'),
+      'glass' => t('Glass'),
+      'heart' => t('Heart'),
+      'help' => t('Help'),
+      'home' => t('Home'),
+      'info' => t('Info'),
+      'lightbulb' => t('Light bulb'),
+      'location' => t('Location'),
+      'lock' => t('Lock'),
+      'luggage' => t('Luggage'),
+      'megaphone' => t('Megaphone'),
+      'microphone' => t('Microphone'),
+      'music' => t('Music'),
+      'ok' => t('OK'),
+      'paperplane' => t('Paper plane'),
+      'pencil' => t('Pencil'),
+      'photo' => t('Photo'),
+      'picture' => t('Picture'),
+      'plane' => t('Plane'),
+      'planet' => t('Planet'),
+      'quote' => t('Quote'),
+      'search' => t('Search'),
+      'smiley' => t('Smiley'),
+      'social-facebook' => t('Social - Facebook'),
+      'social-rss' => t('Social - RSS'),
+      'social-share' => t('Social - Share'),
+      'social-twitter' => t('Social - Twitter'),
+      'social-youtube' => t('Social - Youtube'),
+      'speechbubble' => t('Speech bubble'),
+      'speechbubbles' => t('Speech bubbles'),
+      'star' => t('Star'),
+      'stats' => t('Stats'),
+      'sunglasses' => t('Sunglasses'),
+      'tag' => t('Tag'),
+      'thumbs-up' => t('Thumbs up'),
+      'thumbs-down' => t('Thumbs down'),
+      'tools' => t('Tools'),
+      'trophy' => t('Trophy'),
+      'user' => t('User'),
+      'video' => t('Video'),
+      'videogame' => t('Videogame'),
+      'volume' => t('Volume'),
+      'warning' => t('Warning'),
+      'world' => t('World')
+    )
+  );
+
+  $form['#submit'][] = 'esn_blocktheme_update';
+}
+
+/**
+ * Form for updating a block.
+ */
+function esn_blocktheme_form_block_admin_configure_alter(&$form, &$form_state) {
+  _esn_blocktheme_get_admin_form($form, $form_state, $form['module']['#value'], $form['delta']['#value']);
+}
+
+/**
+ * Form for adding a new block.
+ */
+function esn_blocktheme_form_block_add_block_form_alter(&$form, &$form_state) {
+  _esn_blocktheme_get_admin_form($form, $form_state);
+}
+
+/**
+ * The default for new blocks.
+ */
+function esn_blocktheme_default_new($module, $delta) {
+  // Todo: set the new block theme to the one used most frequently and change it a bit sometimes.
+  return esn_blocktheme_get_default($module, $delta);
+}
+
+/**
+ * Update an existing block after the block form has been submitted.
+ */
+function esn_blocktheme_update($form_id, &$form_state) {
+  $var_name = $form_state['values']['module'] . '-' . $form_state['values']['delta'];
+
+  $esn_blocktheme = variable_get('esn_blocktheme', array());
+
+  if (!$form_state['values']['esn_blocktheme_style']) {
+    unset($esn_blocktheme[$var_name]['style']);
+  } else {
+    $esn_blocktheme[$var_name]['style'] = $form_state['values']['esn_blocktheme_style'];
+  }
+
+  if (!$form_state['values']['esn_blocktheme_color']) {
+    unset($esn_blocktheme[$var_name]['color']);
+  } else {
+    $esn_blocktheme[$var_name]['color'] = $form_state['values']['esn_blocktheme_color'];
+  }
+
+  if (!$form_state['values']['esn_blocktheme_icon']) {
+    unset($esn_blocktheme[$var_name]['icon']);
+  } else {
+    $esn_blocktheme[$var_name]['icon'] = $form_state['values']['esn_blocktheme_icon'];
+  }
+
+  variable_set('esn_blocktheme', $esn_blocktheme);
+  // drupal_theme_rebuild();
+}
+
+/**
+ * Save a new block after the block form has been submitted.
+ */
+function esn_blocktheme_save($form_id, &$form_state) {
+  // First, get the new delta value
+  $result = db_query_range("SELECT delta FROM {block} ORDER BY bid DESC", 0, 1);
+  if ($record = $result->fetchObject()) {
+    $delta = $record->delta;
+    $var_name = $form_state['values']['module'] . '-' . $delta;
+
+    $esn_blocktheme = variable_get('esn_blocktheme', array());
+
+    if ($form_state['values']['esn_blocktheme_style']) {
+      $esn_blocktheme[$var_name]['style'] = $form_state['values']['esn_blocktheme_style'];
+    }
+    if ($form_state['values']['esn_blocktheme_color']) {
+      $esn_blocktheme[$var_name]['color'] = $form_state['values']['esn_blocktheme_color'];
+    }
+    if ($form_state['values']['esn_blocktheme_icon']) {
+      $esn_blocktheme[$var_name]['icon'] = $form_state['values']['esn_blocktheme_icon'];
+    }
+
+    variable_set('esn_blocktheme', $esn_blocktheme);
+    // drupal_theme_rebuild();
+  }
+}
+
+
+/**
+ * Get custom theme for a block.
+ */
+function esn_blocktheme_get_theme($block) {
+  $esn_blocktheme = variable_get('esn_blocktheme', array());
+  $var_name = $block->module . '-' . $block->delta;
+  if (isset($esn_blocktheme[$var_name])) {
+    return $esn_blocktheme[$var_name];
+  } else {
+    return null;
+  }
+}
+
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function esn_blocktheme_preprocess_block(&$variables) {
+  $esn_blocktheme = esn_blocktheme_get_theme($variables['block']);
+
+  if (empty($esn_blocktheme)) {
+    $block = $variables['block'];
+    $esn_blocktheme = esn_blocktheme_get_default($block->module, $block->delta);
+  }
+
+  $variables['classes_array'][] = 'esn-blockbg-' . $esn_blocktheme['style'] . '-' .  $esn_blocktheme['color'];
+  $variables['classes_array'][] = 'esn-blockcolor-' . $esn_blocktheme['color'];
+  $variables['classes_array'][] = 'esn-blockstyle-' . $esn_blocktheme['style'];
+  $variables['esn_block_theme_icon'] = $esn_blocktheme['icon'];
+  $variables['esn_block_theme_style'] = $esn_blocktheme['style'];
+}
+
+/**
+ * Random colours per block by site.
+ */
+function esn_blocktheme_paint_by_number($module, $delta) {
+  // the salt is different on each site, that way the blocks will have different default colours
+  if ($module) {
+    $hash = md5(drupal_get_hash_salt() . $module . '-' . $delta);
+  }
+  else {
+    $hash = md5(drupal_get_hash_salt());
+  }
+  
+  $color = hexdec(substr($hash, -2)) % 4;
+  $colors = array_keys(esn_blocktheme_esn_colors());
+  return $colors[$color];
+}
+
+function esn_blocktheme_esn_colors() {
+  return array(
+    'blue' => t('Blue'),
+    'purple' => t('Pink'),
+    'green' => t('Green'),
+    'orange' => t('Orange'),
+    'dark-blue' => t('Dark blue')
+  );
+}

@@ -1,0 +1,211 @@
+<?php
+
+class EsnApiToolsRsaTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'ESN API Tools - RSA crypto helper',
+      'description' => 'Test the encrypt and decrypt functionality and usage of crypto keys with RSA',
+      'group' => 'ESN API Tools',
+    );
+  }
+
+  function testKeyGen() {
+    $key = esn_api_tools_create_key_pair();
+    $this->assertNotNull($key, 'RSA public private key pair has been generated.');
+    $publickey = null;
+    $privatekey = null;
+    $id = null;
+    extract($key);
+    $this->assertnotNull($publickey, 'Public Key is valid');
+    $this->assertnotNull($privatekey, 'Private Key is valid');
+    $this->assertnotNull($id, 'Key identifier is valid');
+  }
+
+  function testRsaPublicPrivateEncryptionString() {
+    $this->pass('RSA public key encryption, private key decryption. Payload: String');
+    $key = esn_api_tools_create_key_pair();
+    $data = $this->randomString(500);
+    $ciphertext = esn_api_tools_encrypt($key['publickey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the public key if it has been encrypted with.');
+  }
+
+  function testRsaPrivatePublicEncryptionString() {
+    $this->pass('RSA private key encryption, public key decryption. Payload: String');
+    $key = esn_api_tools_create_key_pair();
+    $data = $this->randomString(500);
+    $ciphertext = esn_api_tools_encrypt($key['privatekey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the private key if it has been encrypted with.');
+  }
+
+  function testRsaPublicPrivateEncryptionInt() {
+    $this->pass('RSA public key encryption, private key decryption. Payload: Integer');
+    $key = esn_api_tools_create_key_pair();
+    $data = 5000;
+    $ciphertext = esn_api_tools_encrypt($key['publickey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the public key if it has been encrypted with.');
+  }
+
+  function testRsaPrivatePublicEncryptionInt() {
+    $this->pass('RSA private key encryption, public key decryption. Payload: Integer');
+    $key = esn_api_tools_create_key_pair();
+    $data = 5000;
+    $ciphertext = esn_api_tools_encrypt($key['privatekey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the private key if it has been encrypted with.');
+  }
+
+  function testRsaPublicPrivateEncryptionNull() {
+    $this->pass('RSA public key encryption, private key decryption. Payload: Null');
+    $key = esn_api_tools_create_key_pair();
+    $data = null;
+    $ciphertext = esn_api_tools_encrypt($key['publickey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the public key if it has been encrypted with.');
+  }
+
+  function testRsaPrivatePublicEncryptionNull() {
+    $this->pass('RSA private key encryption, public key decryption. Payload: NUll');
+    $key = esn_api_tools_create_key_pair();
+    $data = null;
+    $ciphertext = esn_api_tools_encrypt($key['privatekey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the private key if it has been encrypted with.');
+  }
+
+  function testRsaPublicPrivateEncryptionArray() {
+    $this->pass('RSA public key encryption, private key decryption. Payload: Array');
+    $key = esn_api_tools_create_key_pair();
+    $data = user_schema();
+    $ciphertext = esn_api_tools_encrypt($key['publickey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the public key if it has been encrypted with.');
+  }
+
+  function testRsaPrivatePublicEncryptionArray() {
+    $this->pass('RSA private key encryption, public key decryption. Payload: Array');
+    $key = esn_api_tools_create_key_pair();
+    $data = user_schema();
+    $ciphertext = esn_api_tools_encrypt($key['privatekey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the private key if it has been encrypted with.');
+  }
+
+  function testRsaPublicPrivateEncryptionObject() {
+    $this->pass('RSA public key encryption, private key decryption. Payload: Object');
+    $key = esn_api_tools_create_key_pair();
+    $data = new stdClass();
+    $data->user = new stdClass();
+    $data->user->schema = user_schema();
+    $data->user->entity_info = user_entity_info();
+    $data->user->theme = user_theme();
+    $ciphertext = esn_api_tools_encrypt($key['publickey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the public key if it has been encrypted with.');
+  }
+
+  function testRsaPrivatePublicEncryptionObject() {
+    $this->pass('RSA private key encryption, public key decryption. Payload: Object');
+    $key = esn_api_tools_create_key_pair();
+    $data = new stdClass();
+    $data->user = new stdClass();
+    $data->user->schema = user_schema();
+    $data->user->entity_info = user_entity_info();
+    $data->user->theme = user_theme();
+    $ciphertext = esn_api_tools_encrypt($key['privatekey'], $data);
+    $this->assertNotNull($ciphertext, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($ciphertext, $data, 'Encrypted value is not equal to clear text value.');
+
+    $decrypted = esn_api_tools_decrypt($key['publickey'], $ciphertext);
+    $this->assertNotNull($decrypted, '$data has been encrypted to $ciphertext');
+    $this->assertNotEqual($decrypted, $ciphertext, 'Decrypted value is not equal to ciphertext.');
+    $this->assertEqual($decrypted, $data, 'Decrypted value is equal to original clear text value.');
+
+    $decrypted_public = esn_api_tools_decrypt($key['privatekey'], $ciphertext);
+    $this->assertFalse($decrypted_public, '$ciphertext cannot be decrypted with the private key if it has been encrypted with.');
+  }
+
+  function testRsaPublicPrivateEncryptionNoKey() {
+    $this->pass('RSA en-/decryption without key. Payload: Object');
+    $data = new stdClass();
+    $ciphertext = esn_api_tools_encrypt(null, $data);
+    $this->assertTrue(empty($ciphertext), '$data cannot be encrypted without a key');
+
+    $decrypted = esn_api_tools_decrypt(null, $ciphertext);
+    $this->assertTrue(empty($decrypted), '$ciphertext cannot be decrypted without a key');
+  }
+}

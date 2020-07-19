@@ -1,0 +1,203 @@
+<?php
+
+/**
+ * @file
+ *  API functions and internal function for ESN API Tools
+ */
+
+require_once 'includes/http.inc';
+require_once 'includes/strings.inc';
+
+$include_path = null;
+define('ESN_COMPLEX_DATA_PREFIX', 'esn-complex-data://');
+
+
+function esn_api_tools_uuid() {
+  return variable_get('esn_site_uuid', null);
+}
+
+function esn_api_tools_debug() {
+  return (bool)variable_get('esn_api_tools_debug', false);
+}
+
+/**
+ * Implements hook_init().
+ */
+function esn_api_tools_init() {
+  spl_autoload_register('_esn_api_tools_autoload');
+}
+
+function _esn_api_tools_autoload($class) {
+  try{
+    $cache = &drupal_static(__FUNCTION__, (object)array('base_path' => '', 'initialized' => FALSE, 'namespaces' => array(), 'classes' => array()));
+    if (!$cache->initialized) {
+      $cache->base_path = DRUPAL_ROOT . '/' . drupal_get_path('module', 'esn_api_tools') . '/lib/phpseclib/';
+      // load seclib folders to only try to load classes from any of those folders
+      foreach (scandir($cache->base_path) as $item) {
+        if ($item == '.' || $item == '..') {
+          continue;
+        }
+        if (is_dir($cache->base_path . $item)) {
+          $cache->namespaces[] = $item;
+        }
+      }
+      $cache->initialized = TRUE;
+    }
+    if (strpos($class, '_') === FALSE) { // it isn't namespaced thus not from PHPseclib
+      return;
+    }
+    $parts = explode('_', $class);
+    if (in_array($parts[0], $cache->namespaces) && !isset($cache->classes[$class])) {
+      $path = $cache->base_path . implode('/', $parts) . '.php';
+      $cache->classes[$class] = file_exists($path) ? $path : FALSE;
+    }
+
+    if (isset($cache->classes[$class]) && $cache->classes[$class]) {
+      include_once $cache->classes[$class];
+    }
+  } catch (Exception $exception) {
+    watchdog_exception('esn_api_tools', $exception, 'Cannot load class "!class".', array('!class' => $class));
+  }
+}
+
+function _esn_api_tools_get_keyfile($keyfile) {
+  if (!is_null($keyfile)){
+    if (stripos($keyfile, './') === 0 || stripos($keyfile, '/') === 0) {
+      return $keyfile;
+    }
+    $keyfile = '/' . $keyfile;
+  } else {
+    $keyfile = '/esn_api_keys.php';
+  }
+  $keyfile = DRUPAL_ROOT . '/' . drupal_get_path('module', 'esn_api_tools') . $keyfile;
+  return $keyfile;
+}
+
+function esn_api_tools_create_key_pair() {
+  $rsa = new Crypt_RSA();
+  $key_pair = $rsa->createKey();
+  $key_pair['id'] = uniqid();
+  return $key_pair;
+}
+
+function esn_api_tools_write_public_key($id, $key, $keyfile = null) {
+  if (empty($id) || empty($key)) {
+    return false;
+  }
+  try{
+    $date = format_date(time(), 'short');
+    $data = "// Key $id added at $date\n";
+    $data .= '$esn_api_public_keys["' . $id . '"] = "' . $key . '";' . "\n";
+    $result = file_put_contents(_esn_api_tools_get_keyfile($keyfile), $data, FILE_APPEND);
+    return $result > 0;
+  } catch (Exception $ex) {
+    return false;
+  }
+}
+
+function esn_api_tools_write_private_key($id, $key) {
+  if (empty($id) || empty($key)) {
+    return false;
+  }
+  $keys = variable_get('esn_api_private_keys', array());
+  $keys[$id] = array('key' => $key, 'created' => format_date(time(), 'short'));
+  variable_set('esn_api_private_keys', $keys);
+  return true;
+}
+
+function esn_api_tools_get_public_key($id = false, $keyfile = null){
+  if (empty($id) && $id !== false){
+    return false;
+  }
+  include(_esn_api_tools_get_keyfile($keyfile));
+  if (isset($esn_api_public_keys) && is_array($esn_api_public_keys)){
+    if (isset($esn_api_public_keys[$id])) {
+      return array($id, $esn_api_public_keys[$id]);
+    } else if ($id === false) {
+      $tmp = array_keys($esn_api_public_keys);
+      $tmp = array_pop($tmp);
+      return array($tmp, $esn_api_public_keys[$tmp]);
+    }
+  }
+  return false;
+}
+
+function esn_api_tools_get_private_key($id = false) {
+  if (empty($id) && $id !== FALSE) {
+    return FALSE;
+  }
+  $id = FALSE;
+  $keys = variable_get('esn_api_private_keys', array());
+  if (isset($keys['esn_api_private_keys'])) {
+    $keys = $keys['esn_api_private_keys'];
+  }
+  if (!is_array($keys) || count($keys) == 0) {
+    watchdog('esn_api_tools', 'esn_api_private_keys variable has no data.', array(), WATCHDOG_ERROR);
+    return FALSE;
+  }
+  if ($id !== FAlSE) {
+    if (!isset($keys[$id])) {
+      watchdog('esn_api_tools', 'Key @id not found.', array('@id' => $id), WATCHDOG_DEBUG);
+      return FALSE;
+    }
+    if (!isset($keys[$id]['key'])) {
+      watchdog('esn_api_tools', 'Key @id has no private key stored.', array('@id' => $id), WATCHDOG_DEBUG);
+      return FALSE;
+    }
+    return $keys[$id]['key'];
+  }
+  $key = array_pop($keys);
+  if (isset($key['key'])) {
+    return $key['key'];
+  }
+  watchdog('esn_api_tools', "First key object has no private key stored.", array(), WATCHDOG_DEBUG);
+  return false;
+}
+
+function esn_api_tools_export_private_keys() {
+  return variable_get('esn_api_private_keys', array());
+}
+
+function esn_api_tools_encrypt($key, $data) {
+  if (is_array($data) || is_object($data)){
+    $data = ESN_COMPLEX_DATA_PREFIX . serialize($data);
+  }
+  $data = _esn_api_tools_crypt($key, $data, true);
+  $data = base64_encode($data);
+  return $data;
+}
+
+function esn_api_tools_decrypt($key, $data) {
+  $data = (string)base64_decode($data);
+  $data = _esn_api_tools_crypt($key, $data, false);
+  if ($data) {
+    if (stripos($data, ESN_COMPLEX_DATA_PREFIX) === 0) {
+      $data = unserialize(substr($data, strlen(ESN_COMPLEX_DATA_PREFIX)));
+    }
+  }
+  return $data;
+}
+
+function _esn_api_tools_crypt($key, $data, $encrypt = true){
+  $rsa = new Crypt_RSA();
+  $rsa->loadKey($key);
+  $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
+  if ($encrypt) {
+    $result = $rsa->encrypt($data);
+  } else {
+    $result = $rsa->decrypt($data);
+  }
+  return $result;
+}
+
+function esn_api_tools_connect($gateway, $endpoint, $authentication = false) {
+  require_once('includes/ServicesAPIClient.php');
+  if ($authentication) {
+    require_once('includes/AuthServicesAPIClient.php');
+    $client = new AuthServicesAPIClient($gateway, $endpoint);
+  } else {
+    $client = new ServicesAPIClient($gateway, $endpoint);
+  }
+  $client->setApiKey(esn_api_tools_uuid());
+  return $client;
+}

@@ -1,0 +1,24 @@
+name = ESN Spotlight
+description = Spotlight feature
+core = 7.x
+package = ESN Satellite
+dependencies[] = ctools
+dependencies[] = ds
+dependencies[] = flexslider
+dependencies[] = flexslider_views
+dependencies[] = flexslider_views_slideshow
+dependencies[] = satellite_base
+dependencies[] = views
+dependencies[] = views_slideshow
+features[ctools][] = ds:ds:1
+features[ctools][] = flexslider:flexslider_default_preset:1
+features[ctools][] = views:views_default:3.0
+features[ds_view_modes][] = spotlight
+features[features_api][] = api:2
+features[flexslider_optionset][] = spotlight
+features[views_view][] = spotlight
+
+; Information added by drush on 2019-06-09
+version = "7.x-4.6.14"
+project = "satellite"
+datestamp = "1560106816"

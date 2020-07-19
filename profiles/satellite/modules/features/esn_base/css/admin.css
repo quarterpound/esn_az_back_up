@@ -1,0 +1,19 @@
+/* Admin Interface Customizations */
+
+/* Date field alignment */
+.date-padding,
+.date-padding div,
+.date-padding label {
+  padding:0px !important;
+}
+.date-no-float {
+  clear:none;
+  float:left;
+  width:auto;
+}
+
+.end-date-wrapper .form-item label {
+	float: left;
+	padding-right: 20px;
+	padding-top: 0px;
+}

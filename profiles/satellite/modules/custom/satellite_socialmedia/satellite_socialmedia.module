@@ -1,0 +1,136 @@
+<?php
+
+/**
+ * Valid permissions for this module
+ * @return array An array of valid permissions for the ESN Satellite Settings module
+ */
+
+/*
+ * returns a list of al social media types available
+ */
+function _satellite_soicalmedia_types() {
+  $socialmedia = array(
+      'facebook' => 'Facebook',
+      'twitter' => 'Twitter',
+      'gplus' => 'Google+',
+      'youtube' => 'Youtube',
+      'flickr' => 'Flickr',
+      'vimeo' => 'Vimeo',
+      'instagram'  => 'Instagram',
+      'linkedin' => 'LinkedIn'
+    );
+  return $socialmedia;
+} 
+
+
+/**
+ * Implements hook_permission()
+ */
+function satellite_socialmedia_permission() {
+  return array(
+    'administer socialmedia links' => array(
+      'title' => t('Administer Social Media links'),
+      'description' => t('Change ESN Satellite settings.'),
+    ),
+  );
+}
+
+/*
+ * Implements hook_menu()
+ */
+function satellite_socialmedia_menu() {
+  $items = array();
+
+  $items['admin/settings/satellite/socialmedia'] = array(
+    'title' => 'Social Media Settings',
+    'description' => 'Configure the social media links.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('satellite_socialmedia_admin'),
+    'access arguments' => array('administer socialmedia links'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/*
+ * Implements hook_menu_alter()
+ */
+function satellite_socialmedia_menu_alter(&$items) {
+  // give access to the menu even if the Satellite settings are not set.
+  // this only works because the access callback can handle more than one string as arguments.
+  $items['admin/settings/satellite']['access arguments'][] = 'administer socialmedia links';
+}
+
+/*
+ * creates a form with a textfield for all social media types
+ */
+function satellite_socialmedia_admin() {
+  $form = array();
+  
+  $socialmedia = _satellite_soicalmedia_types();
+
+  foreach ($socialmedia as $social => $name) {
+    $form['satellite_socialmedia_' . $social] = array(
+      '#type' => 'textfield',
+      '#title' => $name . ' ' . t('link'),
+      '#default_value' => variable_get('satellite_socialmedia_' . $social,''),
+      '#size' => 50,
+      '#description' => t('complete link to %social including http:// or https://', array('%social' => $name) ),
+    );
+  }
+  
+  return system_settings_form($form);
+}
+
+/*
+ * Implements hook_block_info()
+ */
+function satellite_socialmedia_block_info() {
+  $blocks['socialmedia'] = array(
+    'info' => t('Social media links'),
+  );
+  return $blocks;
+}
+
+/*
+ * Implements hook_block_view()
+ */
+function satellite_socialmedia_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'socialmedia':
+      $items = array();
+      $socialmedia = _satellite_soicalmedia_types();
+      foreach ($socialmedia as $social => $name) {
+        $link = variable_get('satellite_socialmedia_' . $social,'');
+        if ($link) {
+          $items[] = array(
+            'data' => l($name, $link, 
+                array('attributes' => array('title' => $name, 'target' => '_blank'))
+              ),
+            'class' => array('socialmedia-' . $social),
+          );
+        }
+      }
+    //dpm($items);
+      if (user_access('access content') && $items) {
+        $block['subject'] = t('Follow us');
+        $block['content'] = array(
+          '#items' => $items,
+          '#theme' => 'item_list',
+          '#prefix' => '<div id="' . $delta . '">',
+          '#suffix' => '</div>',
+          '#attached' => array(
+            'css' => array(
+              drupal_get_path('module', 'satellite_socialmedia') . '/css/socialmedia.css',
+            ),
+          ),
+        );
+      }
+
+      break;
+  }
+  return $block;
+}

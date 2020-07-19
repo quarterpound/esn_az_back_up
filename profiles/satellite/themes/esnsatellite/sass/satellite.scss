@@ -1,0 +1,162 @@
+// Satellite 4 Theme
+
+
+// ------------------------------------------------
+//  LEGACY IE SUPPORT
+// ------------------------------------------------
+$legacy-support-for-ie6: false;
+$legacy-support-for-ie7: false;
+$legacy-support-for-ie8: true;
+
+
+@import "base";
+
+
+
+/* 
+-------------------------------------------------------------- */
+
+#main, #footer {
+	
+}
+
+/* The Calendar settings */
+td.multi-day {
+	a {
+		color: #FFF;
+		margin-right: 10px;
+	}
+}
+
+.calendar {
+	width: 100% !important;
+}
+
+.esn-blocks .block {
+	&.esn-blockcolor-blue {
+		div.mini-day-on { 
+			background: $esn-blue;
+			a { color: #FFF; }
+		}
+	}
+
+	&.esn-blockcolor-purple {
+		div.mini-day-on { 
+			background: $esn-pink;
+			a { color: #FFF; }
+		}
+	}
+
+	&.esn-blockcolor-orange {
+		div.mini-day-on { 
+			background: $esn-orange;
+			a { color: #FFF; }
+		}
+	}
+
+	&.esn-blockcolor-green {
+		div.mini-day-on { 
+			background: $esn-green;
+			a { color: #FFF; }
+		}
+	}
+
+	&.esn-blockcolor-dark-blue {
+		div.mini-day-on {
+			background: $esn-dark-blue;
+			a { color: #FFF; }
+		}
+	}
+}
+
+/* 
+-------------------------------------------------------------- */
+
+
+/* LAYOUT
+-------------------------------------------------------------- */
+
+@include breakpoint(desktop) {
+
+	$zen-column-count: 3;
+	$zen-gutter-width:  0px;
+
+	#middle {
+		//border-top: 1px dotted #ddd;
+	}
+
+	#middle > .inner {
+		@include zen-grid-item-base();
+		@include zen-grid-container();
+	}
+
+	#middle-main    { @include zen-grid-item(2,1, $zen-float-direction, $zen-column-count); }
+	#middle-sidebar { @include zen-grid-item(1,3, $zen-float-direction, $zen-column-count); }
+	
+	#middle-middle {
+		$zen-column-count: 2;
+
+		#middle-first  { @include zen-grid-item(1,1, $zen-float-direction, $zen-column-count); }
+		#middle-second  { @include zen-grid-item(1,2, $zen-float-direction, $zen-column-count); }
+	}
+}
+
+
+/* BLOG
+-------------------------------------------------------------- */
+
+.blog-posts-list {
+	ul {
+		padding-left: 0;
+
+		li {
+			background-image: url("../img/icon_blogpost.png");
+			background-position: 4px 2px;
+			background-repeat: no-repeat;
+			background-size: 14px auto;
+			font-size: 12px;
+			line-height: 17px;
+			list-style: outside none none;
+			margin-bottom: 12px;
+			padding-left: 24px;
+
+			.node-created {
+				display: block;
+				font-size: 0.8em;
+			}
+		}
+	}
+}
+
+/* Notification Manager Styles
+-------------------------------------------------------------- */
+.messages {
+  h3 {
+    margin-top: 0;
+    font-size: 1.08em;
+  }
+}
+
+.nightmode {
+  #page,
+  #header,
+  #title,
+  #content,
+  #middle {
+    color: #888;
+    background-color: #333;
+  }
+}
+
+.nightmode {
+  .more-link a {
+    background-color: #333 !important;
+  }
+  .calendar-calendar,
+  .calendar-legend,
+  .calendar-legend {
+    th, td {
+      background-color: #333 !important;
+    }
+  }
+}

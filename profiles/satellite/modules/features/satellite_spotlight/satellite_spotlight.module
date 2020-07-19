@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Spotlight feature.
+ */
+
+include_once 'satellite_spotlight.features.inc';

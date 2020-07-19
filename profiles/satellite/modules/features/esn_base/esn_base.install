@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Base Feature feature.
+ */
+
+/** Revert ESN Base: Fix admin_menu for Firefox 34+ */
+function esn_base_update_7001() {
+  esn_base_features_revert(array(
+    'esn_base'
+  ));
+}

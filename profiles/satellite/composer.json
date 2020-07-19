@@ -1,0 +1,38 @@
+{
+  "name": "esn/satellite-profile",
+  "description": "ESN Satellite 4.x Installation Profile. See https://satellite.esn.org for more information.",
+  "keywords": [
+    "ESN",
+    "Accounts",
+    "API"
+  ],
+  "type": "library",
+  "license": "ESN Open Source",
+  "authors": [
+    {
+      "name": "Marco von Frieling",
+      "email": "mvonfrie@edu.aau.at",
+      "role": "Lead Developer"
+    }
+  ],
+  "require": {
+    "netresearch/jsonmapper": "^1.4",
+    "phar-io/version": "~2.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5.10"
+  },
+  "autoload": {
+    "files": [],
+    "psr-4": {
+      "ESN\\Satellite\\": "src/Satellite",
+      "ESN\\Conditional\\": "src/Conditional"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ESN\\Satellite\\Tests\\": "tests/Satellite",
+      "ESN\\Conditional\\Tests\\": "tests/Conditional"
+    }
+  }
+}

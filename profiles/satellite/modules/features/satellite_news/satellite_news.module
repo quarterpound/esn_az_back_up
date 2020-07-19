@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ESN News feature.
+ */
+
+include_once 'satellite_news.features.inc';

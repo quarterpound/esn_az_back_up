@@ -1,0 +1,56 @@
+#userbar {
+	
+	background: #222;
+	color: #ccc;
+	a { color: #ccc;}
+
+	& > .inner {
+		padding: 0 10px;
+		line-height: 50px;
+	}
+
+	.block {
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+
+		.block-title {
+			display: none;
+		}
+
+		.block-content {
+			ul {
+				margin: 0;
+				padding: 0;
+
+				li {
+					display: inline-block;
+				}
+			}
+
+			
+		}
+	}
+
+	a {
+		display: inline-block;
+		padding: 0 10px;
+
+		&:hover {
+			color: #fff;
+			text-decoration: none;
+		}
+	}
+
+	#usermenu {
+		display: inline-block;
+	}
+
+	#user {
+		float: right;
+
+		.logout, .username {
+			display: inline-block;
+		}
+	}
+}

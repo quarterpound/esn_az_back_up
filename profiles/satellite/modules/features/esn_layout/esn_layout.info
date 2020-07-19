@@ -1,0 +1,15 @@
+name = ESN Flexible Layouts
+description = Provides flexible layout system to ESN sites using Panels and Panelizer
+core = 7.x
+package = ESN
+dependencies[] = panels
+dependencies[] = panels_ipe
+dependencies[] = panels_node
+dependencies[] = views_content
+features[features_api][] = api:2
+project path = profiles/satellite/modules/features
+
+; Information added by drush on 2018-03-28
+version = "7.x-1.x-dev"
+project = "esn_layout"
+datestamp = "1522271032"

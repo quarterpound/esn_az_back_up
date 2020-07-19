@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ESN Partners (External) feature.
+ */
+
+include_once 'satellite_partners_external.features.inc';

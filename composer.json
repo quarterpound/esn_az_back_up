@@ -1,0 +1,38 @@
+{
+    "name": "esn/satellite",
+    "description": "ESN Satellite 4.x Distribution. See https://satellite.esn.org for more information.",
+    "keywords": ["ESN", "Accounts", "API"],
+    "type": "project",
+    "license": "ESN Open Source",
+    "authors": [
+        {
+            "name": "Marco von Frieling",
+            "email": "mvonfrie@edu.aau.at",
+            "role": "Lead Developer"
+
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "composer/installers": "^1.2",
+        "vlucas/phpdotenv": "^2.4",
+        "wikimedia/composer-merge-plugin": "^1.4"
+    },
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "merge-plugin": {
+            "include": [
+                "profiles/satellite/composer.json"
+            ]
+        }
+    },
+    "autoload": {
+        "files": [
+            "load.environment.php"
+        ]
+    }
+
+}

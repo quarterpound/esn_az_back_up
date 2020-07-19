@@ -1,0 +1,40 @@
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
+  }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
+
+// Background animation 
+//
+
+@mixin background-animation($name, $colors, $container, $duration, $timing: "", $iteration: "", $direction: ""){
+  @include keyframes($name) {
+    @for $i from 1 through length($colors){
+      $nb-colors: length($colors) - 1;
+      $percentage: 100% / $nb-colors;
+      $percentage: $percentage * ($i - ($i / $i));
+      $percentage: round($percentage);
+      #{$percentage}{
+        background: nth($colors, $i);
+      }
+      
+    }
+  }
+
+  #{$container}{
+    background: nth($colors, 1);
+    animation-name: unquote($name);
+    animation-duration: unquote($duration);
+    -webkit-animation-name: unquote($name);
+    -webkit-animation-duration: unquote($duration);
+    @if $iteration { animation-iteration-count: unquote($iteration); -webkit-animation-iteration-count: unquote($iteration); }
+    @if $direction { animation-direction: unquote($direction); -webkit-animation-direction: unquote($direction); }
+    @if $timing { animation-timing-function: unquote($timing); -webkit-animation-timing-function: unquote($timing); }
+    -webkit-animation-fill-mode: backwards;
+    animation-fill-mode: backwards;
+
+  }
+}

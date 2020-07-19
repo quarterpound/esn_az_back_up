@@ -1,0 +1,1 @@
+OpenEnterprise Blog for Satellite

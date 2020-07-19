@@ -1,0 +1,18 @@
+name = WYSIWYG configuration
+core = 7.x
+package = ESN
+version = 7.x-1.x-dev
+project = esn_wysiwyg
+dependencies[] = features
+dependencies[] = filter
+dependencies[] = wysiwyg
+_info_file_ctime = 1494776773
+datestamp = 1494776773
+features[features_api][] = api:2
+features[wysiwyg][] = rich_text
+features_exclude[filter][rich_text] = rich_text
+
+; Information added by drush on 2018-04-10
+version = "7.x-1.x-dev"
+project = "esn_wysiwyg"
+datestamp = "1523333368"

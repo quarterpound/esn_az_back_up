@@ -1,0 +1,35 @@
+
+/* ADMIN MENU (Hide)
+-------------------------------------------------------------- */
+
+body.admin-menu.adm_menu_hidden {
+	margin-top: 0px !important;
+}
+
+body.adm_menu_hidden #admin-menu {
+	display: none;
+}
+
+
+/* KRUMO
+-------------------------------------------------------------- */
+
+
+div.krumo-root, div.krumo-element {
+  color: #000;
+}
+
+
+h2.styleguide {
+	background: #f2f2f2;
+	border-radius: 5px;
+	padding: 12px 15px 10px 15px;
+	margin: 30px 0 15px 0;
+	color: #bbb;
+	text-shadow: 0 1px 0 rgba(255,255,255,1);
+}
+
+div.styleguide {
+	border: none;
+	padding: 0;
+}

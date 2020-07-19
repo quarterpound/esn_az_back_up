@@ -1,0 +1,104 @@
+
+/* INNER
+-------------------------------------------------------------- */
+
+.inner {
+	position: relative;
+	margin: 0 auto;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+
+@include breakpoint(desktop) {
+	
+	#userbar > .inner,
+	#header > .inner,
+	#title > .inner,
+	#console > .inner,
+	#spotlight > .inner,
+	#top > .inner,
+	#content > .inner,
+	#middle > .inner,
+	#bottom > .inner,
+	#footer > .inner .inner
+	 {
+		width: $break-desktop;
+	}
+}
+
+
+
+/* ZEN COLUMNS CONFIGURATION
+-------------------------------------------------------------- */
+
+$zen-column-count:  3; 
+$zen-gutter-width:  0px;
+
+$zen-auto-include-item-base: false;
+
+#header,
+#navigation,
+#spotlight,
+#sidebar,
+#footer,
+#footer-top {
+	@include zen-grid-item-base();
+}
+
+#header, 
+#main,
+#sidebar,
+#footer,
+#footer-top {
+	@include zen-grid-container();
+}
+
+
+
+
+
+/* GENERAL LAYOUT
+-------------------------------------------------------------- */
+
+@include breakpoint(tablet-landscape) {
+
+	$zen-column-count: 2;
+
+	#front-left {
+		@include zen-grid-item(1, 1);
+	}
+
+	#front-right {
+		@include zen-grid-item(1, 2);
+	}
+
+}
+
+@include breakpoint(desktop) {
+	
+	$zen-column-count: 3;
+
+	#content-main    { @include zen-grid-item(2,1); }
+	#content-sidebar { @include zen-grid-item(1,3); }
+
+	#footer-first    { @include zen-grid-item(1,1); }
+	#footer-second   { @include zen-grid-item(1,2); }
+	#footer-third    { @include zen-grid-item(1,3); }
+	
+}
+
+
+/* small fix
+-------------------------------------------------------------- */
+
+#main {
+	margin-botom: 15px;
+}
+
+
+
+/* 
+-------------------------------------------------------------- */
+
+

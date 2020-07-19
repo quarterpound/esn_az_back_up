@@ -1,0 +1,8 @@
+name = Satellite blocks theme
+description = Provides a configuration option to select custom themes for blocks
+core = 7.x
+
+; Information added by drush on 2017-09-12
+version = "7.x-1.x-dev"
+project = "esn_blocktheme"
+datestamp = "1505212579"
